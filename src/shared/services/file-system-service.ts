@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import { Injectable } from "@nestjs/common";
-import { RootDir } from "src/config/constant.config";
+import { RootDir } from "src/configs/constant.config";
 
 Injectable()
 export class FileSystemService {

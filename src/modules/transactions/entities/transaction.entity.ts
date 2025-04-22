@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { User } from "src/modules/users/entities/user.entity";
-import { TableName } from "src/config/database.config";
+import { User } from "src/modules/user/entities/user.entity";
+import { TableName } from "src/configs/database.config";
 @Entity({name: TableName.Transaction})
 export class Transaction {
     @PrimaryGeneratedColumn("uuid")

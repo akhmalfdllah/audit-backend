@@ -24,3 +24,8 @@ export enum TableName {
     User = "User",
     Transaction = "Transaction"
 }
+
+export enum UserRole {
+    User = "user",
+    Admin = "admin",
+}

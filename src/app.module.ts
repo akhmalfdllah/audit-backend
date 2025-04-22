@@ -3,7 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { APP_FILTER } from "@nestjs/core";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseConfig } from './config/database.config';
+import { DatabaseConfig } from './configs/database.config';
 
 @Module({
   imports: [
