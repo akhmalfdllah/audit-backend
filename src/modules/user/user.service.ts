@@ -1,7 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 import { UserRepository } from './user.repository';
 import { CreateUserBodyDto } from './dto/create-user-body.dto';
 import { ArgonService } from 'src/shared/services/argon.service';
+import { UserPayloadDto} from 'src/modules/user/dto/user-payload.dto';
 
 @Injectable()
 export class UserService {
@@ -24,4 +26,9 @@ export class UserService {
   const saved = await this.userRepository.save(entity);
   return plainToInstance(UserPayloadDto, saved);
     }
+
+  async findAll(searchUserQueryDto: SearchUserQueryTransformed) {
+    const users = await this.userRepository.find({where: searchUserQueryDto});
+    return plainToInstance(UserPayloadDto, users);
+  }
 }
