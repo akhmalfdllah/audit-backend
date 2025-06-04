@@ -1,6 +1,6 @@
 import { TableName } from "src/configs/database.config";
 import { User } from "src/modules/user/entities/user.entity";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Table } from "typeorm";
+import { Column, CreateDateColumn, UpdateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, JoinTable, ManyToMany } from "typeorm";
 
 @Entity({name: TableName.Group})
 export class Group {
@@ -13,8 +13,15 @@ export class Group {
     @Column({nullable: false})
 
     @OneToMany(() => User, (user) => user.group)
-    members: User
+    members: User[];
+
+    // @ManyToMany(() => Node, (node) => node.groups)
+    // @JoinTable()
+    // apps: Node[];
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

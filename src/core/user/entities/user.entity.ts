@@ -1,11 +1,11 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import { Exclude } from "class-transformer";
 import { TableName, UserRole } from "src/configs/database.config";
-import { Group } from "src/modules/group/entities/group.entity";
+import { Group } from "src/core/group/entities/group.entity";
 @Entity({ name: TableName.User })
 export class User {
     @PrimaryGeneratedColumn("uuid")
-    id: number;
+    id: string;
 
     @Column({ unique: true })
     username: string;
