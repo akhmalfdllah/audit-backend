@@ -23,3 +23,7 @@ export const JWT_COMMON_EXPIRE_IN = process.env.JWT_COMMON_EXPIRE_IN || "1d";
 //Argon env
 export const ARGON_SECRET_KEY = process.env.ARGON_SECRET_KEY || "ngoerby.com";
 export const ARGON_SALT = process.env.ARGON_SALT || "akhmal_ngoerby";
+
+// cookie
+export const JWT_REFRESH_COOKIE_NAME = process.env.JWT_REFRESH_COOKIE_NAME || "refreshToken";
+export const JWT_REFRESH_COOKIE_SECURE = process.env.JWT_REFRESH_COOKIE_SECURE || "true";

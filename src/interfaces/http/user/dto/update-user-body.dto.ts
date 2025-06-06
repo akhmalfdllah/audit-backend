@@ -1,6 +1,6 @@
 import z from "zod";
 import { ApiProperty, OmitType } from "@nestjs/swagger";
-import { Group } from "src/modules/group/entities/group.entity";
+import { Group } from "src/core/group/entities/group.entity";
 import { Prop } from "src/shared/utils/common.util";
 import { UserRole } from "src/configs/database.config";
 

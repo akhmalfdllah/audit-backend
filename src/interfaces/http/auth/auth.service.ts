@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { UserService } from "src/modules/user/user.service";
+import { UserService } from "src/interfaces/http/user/user.service";
 import { SignUpBodyDto } from "src/interfaces/http/auth/dto/signup-body.dto";
 import { SignInBodyDto } from "src/interfaces/http/auth/dto/signin-body.dto";
 import type { JwtParams, JwtPayload } from "src/types/jwt.type";

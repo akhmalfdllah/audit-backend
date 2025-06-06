@@ -1,5 +1,5 @@
 import { TableName } from "src/configs/database.config";
-import { User } from "src/modules/user/entities/user.entity";
+import { User } from "src/core/user/entities/user.entity";
 import { Column, CreateDateColumn, UpdateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, JoinTable, ManyToMany } from "typeorm";
 
 @Entity({name: TableName.Group})

@@ -1,4 +1,5 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn,
+    UpdateDateColumn } from "typeorm"
 import { Exclude } from "class-transformer";
 import { TableName, UserRole } from "src/configs/database.config";
 import { Group } from "src/core/group/entities/group.entity";
@@ -17,8 +18,18 @@ export class User {
     @Column({ default: UserRole.Admin })
     role: UserRole;
 
+    @Column({ default: null, nullable: true })
+    @Exclude()
+    refreshToken: string | null;
+
     @ManyToOne(() => Group, (group) => group.members)
     group: Group;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }
 
 export { UserRole };

@@ -7,8 +7,8 @@ import {
 } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { ArgonService } from "src/shared/services/argon.service";
-import { UserRepository, relations } from "src/interfaces/http/user/user.repository";
-import { GroupRepository } from "src/core/group/group.repository";
+import { UserRepository, relations } from "src/core/user/repositories/user.repository";
+import { GroupRepository } from "src/core/group/repositories/group.repository";
 import { CreateUserBodyDto } from "src/interfaces/http/user/dto/create-user-body.dto";
 import { VerifyUserBodyDto } from "src/interfaces/http/user/dto/verify-user-body.dto";
 import { UpdateUserBodyTransformed } from "src/interfaces/http/user/dto/update-user-body.dto";

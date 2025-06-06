@@ -4,6 +4,11 @@ import { Response, Request } from "express";
 import { EnsureValid, RefreshTokenGuard } from "src/shared/decorators/common.decorator";
 import { User } from "src/shared/decorators/params/common.decorator";
 import { authDocs } from "./auth.docs";
+import { AuthService } from "src/interfaces/http/auth/auth.service";
+import { CookieService } from "src/shared/services/cookie.service";
+import { signInBodySchema, SignInBodyDto } from "src/interfaces/http/auth/dto/signin-body.dto";
+import { signUpBodySchema, SignUpBodyDto } from "src/interfaces/http/auth/dto/signup-body.dto";
+import { DecodedUser } from "src/types/jwt.type";
 
 @Controller()
 export class AuthController {

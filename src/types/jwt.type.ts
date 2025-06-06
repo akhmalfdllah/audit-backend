@@ -1,4 +1,4 @@
-import type { User } from "src/modules/user/entities/user.entity";
+import type { User } from "src/core/user/entities/user.entity";
 import { UserRole } from "src/configs/database.config";
 
 export type JwtRole = `${UserRole}`;
