@@ -1,18 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { Repository, FindOptionsRelations } from 'typeorm';
-import { User } from 'src/core/user/entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { User } from "src/core/user/entities/user.entity";
 
-@Injectable()
-export class UserRepository extends Repository<User> {
-    constructor(
-        @InjectRepository(User)
-        protected repository: Repository<User>,
-    ) {
-        super(repository.target, repository.manager, repository.queryRunner);
-    }
+export abstract class IUserRepository {
+    abstract findById(id: string): Promise<User | null>;
+    abstract findByUsername(username: string): Promise<User | null>;
+    abstract create(user: User): Promise<User>;
+    abstract update(user: User): Promise<User>;
+    abstract delete(id: string): Promise<void>;
 }
-
-export const relations: FindOptionsRelations<User> = {
-    group: true
-};

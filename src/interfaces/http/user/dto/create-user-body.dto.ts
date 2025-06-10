@@ -1,6 +1,6 @@
 import z from "zod";
 import { ApiProperty } from "@nestjs/swagger";
-import { UserRole } from "src/configs/database.config";
+import { UserRole } from "src/core/user/entities/user.entity";
 
 export const createUserBodySchema = z.object({
   username: z.string().trim().min(1, "username can't be empty").toLowerCase(),

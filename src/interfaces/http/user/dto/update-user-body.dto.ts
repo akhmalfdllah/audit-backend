@@ -2,7 +2,7 @@ import z from "zod";
 import { ApiProperty, OmitType } from "@nestjs/swagger";
 import { Group } from "src/core/group/entities/group.entity";
 import { Prop } from "src/shared/utils/common.util";
-import { UserRole } from "src/configs/database.config";
+import { UserRole } from "src/core/user/entities/user.entity";
 
 export const updateUserBodySchema = z.object({
   role: z.nativeEnum(UserRole, { message: "invalid role" }).optional(),

@@ -1,11 +1,8 @@
-import {
-    Entity, Column, PrimaryGeneratedColumn, ManyToOne,
-    CreateDateColumn, UpdateDateColumn,
-} from 'typeorm';
-import { GroupORM } from './group.orm-entity';
-import { UserRole } from 'src/core/user/entities/user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { UserRole } from "src/core/user/entities/user.entity";
+import { GroupORM } from "src/infrastructure/database/typeorm/entities/group.orm-entity";
 
-@Entity({ name: 'users' })
+@Entity('users')
 export class UserORM {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -20,7 +17,7 @@ export class UserORM {
     role: UserRole;
 
     @Column({ nullable: true })
-    refreshToken: string;
+    refreshToken: string | null;
 
     @ManyToOne(() => GroupORM, (group) => group.members)
     group: GroupORM;
