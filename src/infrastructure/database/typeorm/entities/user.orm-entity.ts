@@ -1,8 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { UserRole } from "src/core/user/entities/user.entity";
 import { GroupORM } from "src/infrastructure/database/typeorm/entities/group.orm-entity";
+import { TableName } from "src/configs/database.config";
 
-@Entity('users')
+@Entity({name: TableName.User})
 export class UserORM {
     @PrimaryGeneratedColumn('uuid')
     id: string;

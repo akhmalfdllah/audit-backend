@@ -7,14 +7,18 @@ import {
     OneToMany,
 } from "typeorm";
 import { UserORM } from "./user.orm-entity";
+import { TableName } from "src/configs/database.config";
 
-@Entity('groups')
+@Entity({ name: TableName.Group })
 export class GroupORM {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ nullable:false, unique: true })
+    @Column({ nullable: false, unique: true })
     name: string;
+
+    @Column({ nullable: false })
+    description: string;
 
     @OneToMany(() => UserORM, (user) => user.group)
     members: UserORM[];

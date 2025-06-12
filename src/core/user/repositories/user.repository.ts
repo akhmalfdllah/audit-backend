@@ -1,9 +1,10 @@
 import { User } from "src/core/user/entities/user.entity";
 
-export abstract class IUserRepository {
-    abstract findById(id: string): Promise<User | null>;
-    abstract findByUsername(username: string): Promise<User | null>;
-    abstract create(user: User): Promise<User>;
-    abstract update(user: User): Promise<User>;
-    abstract delete(id: string): Promise<void>;
+export abstract class UserRepository {
+    abstract findOneBy(where: Partial<User>): Promise<User | null>;
+    abstract findOneByOrFail(where: Partial<User>): Promise<User>;
+    abstract find(options: object): Promise<User[]>;
+    abstract save(user: Partial<User>): Promise<User>;
+    abstract remove(user: User): Promise<User>;
+    abstract update(id: string, user: Partial<User>): Promise<User>;
 }

@@ -1,5 +1,5 @@
 import type { User } from "src/core/user/entities/user.entity";
-import { UserRole } from "src/configs/database.config";
+import { UserRole } from "src/core/user/entities/user.entity";
 
 export type JwtRole = `${UserRole}`;
 export interface JwtParams extends Pick<User, "id" | "role"> {}

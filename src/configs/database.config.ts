@@ -20,11 +20,11 @@ export const DatabaseConfig: TypeOrmModuleOptions = {
     entities: ['dist/**/*.entity.js'],
 }
 
-// export enum TableName {
-//     User = "User",
-//     Group = "Group",
-//     Transaction = "Transaction"
-// }
+export enum TableName {
+    User = "User",
+    Group = "Group",
+    Transaction = "Transaction"
+}
 
 // export enum BooleanStatus {
 //     True = "true",

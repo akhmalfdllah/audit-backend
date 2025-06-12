@@ -11,15 +11,15 @@ export const createUserBodySchema = z.object({
 
 type CreateUserBodySchema = z.infer<typeof createUserBodySchema>;
 export class CreateUserBodyDto implements CreateUserBodySchema {
-  @ApiProperty({ default: "root" })
+  @ApiProperty({ default: "admin" })
   username: string;
 
   @ApiProperty({ default: UserRole.User, required: false })
   role: UserRole;
 
-  @ApiProperty({ default: "root" })
+  @ApiProperty({ default: "admin" })
   password: string;
 
-  @ApiProperty({ default: "root" })
+  @ApiProperty({ default: "admin" })
   confirmPassword: string;
 }
