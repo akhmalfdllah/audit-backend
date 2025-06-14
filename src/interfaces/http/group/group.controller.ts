@@ -1,57 +1,57 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { TokenGuard, EnsureValid } from "src/shared/decorators/common.decorator";
-import { groupDocs } from "src/modules/group/group.docs";
-import { GroupService } from "src/modules/group/group.service";
-import { createGroupBodySchema, CreateGroupBodyDto } from "src/modules/group/dto/create-group-body.dto";
-import { updateGroupBodySchema, UpdateGroupBodyDto } from "src/modules/group/dto/update-group-body.dto";
+import { groupDocs } from "src/interfaces/http/group/group.docs";
+import { GroupFacade } from "src/interfaces/http/group/group.service";
+import { createGroupBodySchema, CreateGroupBodyDto } from "src/applications/group/dto/create-group-body.dto";
+import { updateGroupBodySchema, UpdateGroupBodyDto } from "src/applications/group/dto/update-group-body.dto";
 import {
   searchGroupQuerySchema,
   SearchGroupQueryTransformed,
   SearchGroupQueryDto,
-} from "src/modules/group/dto/search-group-query.dto";
+} from "src/applications/group/dto/search-group-query.dto";
 
 @ApiBearerAuth()
 @Controller("group")
 export class GroupController {
-  constructor(private readonly groupService: GroupService) {}
+  constructor(private readonly groupFacade: GroupFacade) { }
 
   @Post()
   @ApiOperation(groupDocs.post_group)
-  @TokenGuard(["root", "developer"])
+  @TokenGuard(["admin"])
   @EnsureValid(createGroupBodySchema, "body")
   create(@Body() createGroupBodyDto: CreateGroupBodyDto) {
-    return this.groupService.save(createGroupBodyDto);
+    return this.groupFacade.save(createGroupBodyDto);
   }
 
-  @Get()
+    @Get()
   @ApiOperation(groupDocs.get_group)
-  @TokenGuard(["root", "developer"])
+  @TokenGuard(["admin"]) // atau sesuai role
   @EnsureValid(searchGroupQuerySchema, "query")
-  findAll(@Query() searchGroupQueryDto: SearchGroupQueryDto) {
+  async findAll(@Query() searchGroupQueryDto: SearchGroupQueryDto) {
     const searchGroupQuery = searchGroupQueryDto as unknown as SearchGroupQueryTransformed;
-    return this.groupService.findAll(searchGroupQuery);
+    return this.groupFacade.findAll(searchGroupQuery);
   }
 
   @Get(":id")
   @ApiOperation(groupDocs.get_groupId)
-  @TokenGuard(["root", "developer"])
+  @TokenGuard(["admin"])
   findOne(@Param("id") id: string) {
-    return this.groupService.findOne(id);
+    return this.groupFacade.findOne(id);
   }
 
   @Patch(":id")
   @ApiOperation(groupDocs.patch_groupId)
-  @TokenGuard(["root", "developer"])
+  @TokenGuard(["admin"])
   @EnsureValid(updateGroupBodySchema, "body")
   update(@Param("id") id: string, @Body() updateGroupBodyDto: UpdateGroupBodyDto) {
-    return this.groupService.updated(id, updateGroupBodyDto);
+    return this.groupFacade.updated(id, updateGroupBodyDto);
   }
 
   @Delete(":id")
   @ApiOperation(groupDocs.delete_groupId)
-  @TokenGuard(["root", "developer"])
+  @TokenGuard(["admin"])
   remove(@Param("id") id: string) {
-    return this.groupService.remove(id);
+    return this.groupFacade.remove(id);
   }
 }

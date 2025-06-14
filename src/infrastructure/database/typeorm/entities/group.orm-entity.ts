@@ -4,7 +4,7 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    OneToMany,
+    ManyToMany,
 } from "typeorm";
 import { UserORM } from "./user.orm-entity";
 import { TableName } from "src/configs/database.config";
@@ -20,7 +20,7 @@ export class GroupORM {
     @Column({ nullable: false })
     description: string;
 
-    @OneToMany(() => UserORM, (user) => user.group)
+    @ManyToMany(() => UserORM, (user) => user.groups)
     members: UserORM[];
 
     @CreateDateColumn()

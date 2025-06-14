@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, JoinTable, ManyToMany } from "typeorm";
 import { UserRole } from "src/core/user/entities/user.entity";
 import { GroupORM } from "src/infrastructure/database/typeorm/entities/group.orm-entity";
 import { TableName } from "src/configs/database.config";
 
-@Entity({name: TableName.User})
+@Entity({ name: TableName.User })
 export class UserORM {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -20,12 +20,14 @@ export class UserORM {
     @Column({ nullable: true })
     refreshToken: string | null;
 
-    @ManyToOne(() => GroupORM, (group) => group.members)
-    group: GroupORM;
+    @ManyToMany(() => GroupORM, (group) => group.members)
+    @JoinTable()
+    groups: GroupORM[];
 
-    @CreateDateColumn()
+
+    @CreateDateColumn({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     updatedAt: Date;
 }

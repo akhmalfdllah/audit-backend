@@ -48,5 +48,5 @@ export class UserRepositoryImpl implements AbstractUserRepo {
 }
 
 export const relations: FindOptionsRelations<UserORM> = {
-  group: true
+  groups: true
 }

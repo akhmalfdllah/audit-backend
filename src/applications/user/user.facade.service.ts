@@ -1,0 +1,86 @@
+// src/application/user/user.facade.service.ts
+
+import { Injectable } from "@nestjs/common";
+import {
+    CreateUserUseCase,
+    FindAllUsersUseCase,
+    FindOneUserUseCase,
+    UpdateUserUseCase,
+    SafeUpdateUserUseCase,
+    DeleteUserUseCase,
+    VerifyUserUseCase,
+    VerifyUserWithRefreshTokenUseCase,
+    SignOutUseCase,
+    UpdateRefreshTokenUseCase,
+    RetrieveGroupUseCase
+} from "./use-cases/common.use-case";
+
+import {
+    CreateUserBodyDto,
+    SafeUpdateBodyDto,
+    SearchUserQueryTransformed,
+    UpdateUserBodyTransformed,
+    VerifyUserBodyDto,
+    UserPayloadDto,
+} from "./dto";
+
+@Injectable()
+export class UserFacadeService {
+    constructor(
+        private readonly createUserUseCase: CreateUserUseCase,
+        private readonly findAllUsersUseCase: FindAllUsersUseCase,
+        private readonly findOneUserUseCase: FindOneUserUseCase,
+        private readonly updateUserUseCase: UpdateUserUseCase,
+        private readonly safeUpdateUserUseCase: SafeUpdateUserUseCase,
+        private readonly deleteUserUseCase: DeleteUserUseCase,
+        private readonly verifyUserUseCase: VerifyUserUseCase,
+        private readonly verifyUserWithRefreshTokenUseCase: VerifyUserWithRefreshTokenUseCase,
+        private readonly signOutUseCase: SignOutUseCase,
+        private readonly updateRefreshTokenUseCase: UpdateRefreshTokenUseCase,
+        private readonly retrieveGroupUseCase: RetrieveGroupUseCase,
+    ) { }
+
+    create(dto: CreateUserBodyDto) {
+        return this.createUserUseCase.execute(dto);
+    }
+
+    findAll(query: SearchUserQueryTransformed) {
+        return this.findAllUsersUseCase.execute(query);
+    }
+
+    findOne(id: string) {
+        return this.findOneUserUseCase.execute(id);
+    }
+
+    update(id: string, dto: UpdateUserBodyTransformed) {
+        return this.updateUserUseCase.execute(id, dto);
+    }
+
+    safeUpdate(id: string, dto: SafeUpdateBodyDto) {
+        return this.safeUpdateUserUseCase.execute(id, dto);
+    }
+
+    delete(id: string) {
+        return this.deleteUserUseCase.execute(id);
+    }
+
+    verifyUser(dto: VerifyUserBodyDto) {
+        return this.verifyUserUseCase.execute(dto);
+    }
+
+    verifyUserWithRefreshToken(id: string, refreshToken: string) {
+        return this.verifyUserWithRefreshTokenUseCase.execute(id, refreshToken);
+    }
+
+    signOut(id: string, refreshToken: string) {
+        return this.signOutUseCase.execute(id, refreshToken);
+    }
+
+    updateRefreshToken(user: UserPayloadDto, refreshToken: string) {
+        return this.updateRefreshTokenUseCase.execute(user, refreshToken);
+    }
+
+    retrieveGroup(userId: string) {
+        return this.retrieveGroupUseCase.execute(userId);
+    }
+}

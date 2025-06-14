@@ -12,7 +12,7 @@ export class User {
         public password: string,
         public role: UserRole,
         public refreshToken: string | null,
-        public group: Group,
+        public groups: Group[] = [],
         public createdAt: Date,
         public updatedAt: Date
     ) { }

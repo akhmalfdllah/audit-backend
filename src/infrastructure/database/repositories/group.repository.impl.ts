@@ -13,9 +13,20 @@ export class GroupRepositoryImpl implements AbsctractGroupRepo {
         private readonly ormRepo: Repository<GroupORM>,
     ) { }
 
+    async findGroupByMemberId(userId: string): Promise<Group> {
+        const group = await this.ormRepo
+            .createQueryBuilder('group')
+            .leftJoinAndSelect('group.members', 'member')
+            .where('member.id = :id', { id: userId })
+            .getOne();
+
+        if (!group) throw new Error('Group not found');
+        return group;
+    }
+
     create(group: Partial<Group>): Group {
-    return GroupMapper.toDomain(this.ormRepo.create(group));
-  }
+        return GroupMapper.toDomain(this.ormRepo.create(group));
+    }
     async findOneBy(where: Partial<Group>): Promise<Group | null> {
         const group = await this.ormRepo.findOne({ where, relations });
         return group ? GroupMapper.toDomain(group) : null;

@@ -1,6 +1,7 @@
 import { Group } from "src/core/group/entities/group.entity";
 
 export abstract class GroupRepository {
+  abstract findGroupByMemberId(userId: string): Promise<Group>;
   abstract create(group: Partial<Group>): Group;
   abstract findOneBy(where: Partial<Group>): Promise<Group | null>;
   abstract findOneByOrFail(where: Partial<Group>): Promise<Group>;
