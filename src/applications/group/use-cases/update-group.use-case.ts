@@ -3,6 +3,7 @@ import { plainToInstance } from 'class-transformer';
 import { GroupRepository } from 'src/core/group/repositories/group.repository';
 import { UpdateGroupBodyDto } from 'src/applications/group/dto/update-group-body.dto';
 import { GroupPayloadDto } from 'src/applications/group/dto/group-payload.dto';
+import { mapUpdateGroupDtoToDomain } from 'src/applications/group/group.mapper';
 
 export class UpdateGroupUseCase {
     constructor(private readonly groupRepository: GroupRepository) { }
@@ -11,7 +12,8 @@ export class UpdateGroupUseCase {
         const group = await this.groupRepository.findOneByOrFail({ id }).catch(() => {
             throw new NotFoundException('group not found!');
         });
-        const updated = await this.groupRepository.save({ ...group, ...updateGroupBodyDto });
+        const updatedGroup = mapUpdateGroupDtoToDomain(group, updateGroupBodyDto);
+        const updated = await this.groupRepository.save(updatedGroup);
         return plainToInstance(GroupPayloadDto, updated);
     }
 }

@@ -7,7 +7,9 @@ export class FindAllGroupUseCase {
     constructor(private readonly groupRepository: GroupRepository) { }
 
     async execute({ member }: SearchGroupQueryTransformed) {
-        const groups = await this.groupRepository.find({ where: { id: member.id } });
+        const groups = await this.groupRepository.find({
+            where: { members: { id: member.id } },
+        });
         return plainToInstance(GroupPayloadDto, groups);
     }
 }

@@ -9,7 +9,18 @@ export class FindAllUsersUseCase {
     constructor(private readonly userRepository: UserRepository) { }
 
     async execute(searchDto: SearchUserQueryTransformed) {
-        const users = await this.userRepository.find({ where: searchDto });
+        const where: any = {};
+
+        if (searchDto.role) {
+            where.role = searchDto.role;
+        }
+
+        if (searchDto.group) {
+            // assume relation is "groups", many-to-many
+            where.groups = { id: searchDto.group.id };
+        }
+
+        const users = await this.userRepository.find({ where });
         return plainToInstance(UserPayloadDto, users);
     }
 }

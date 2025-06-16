@@ -12,20 +12,26 @@ export class UpdateUserUseCase {
         private readonly groupRepository: GroupRepository,
     ) { }
 
-    async execute(id: string, updateUserDto: UpdateUserBodyTransformed) {
+    async execute(id: string, dto: UpdateUserBodyTransformed) {
         const user = await this.userRepository.findOneByOrFail({ id }).catch(() => {
             throw new NotFoundException("user not found!");
         });
 
-        if (updateUserDto.group) {
-            const groupId = updateUserDto.group.id;
-            const group = await this.groupRepository.findOneByOrFail({ id: groupId }).catch(() => {
+        // Handle update group
+        if (dto.group === null) {
+            user.groups = [];
+        } else if (dto.group) {
+            const group = await this.groupRepository.findOneByOrFail({ id: dto.group.id }).catch(() => {
                 throw new NotFoundException("group not found!");
             });
-            user.group = group;
+            user.groups = [group];
         }
 
-        const updated = await this.userRepository.update(id, { ...user, ...updateUserDto });
+        if (dto.role) {
+            user.role = dto.role;
+        }
+
+        const updated = await this.userRepository.save(user); // save lebih aman untuk relasi
         return plainToInstance(UserPayloadDto, updated);
     }
 }

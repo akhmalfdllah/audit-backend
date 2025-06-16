@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from "@nestj
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { TokenGuard, EnsureValid } from "src/shared/decorators/common.decorator";
 import { groupDocs } from "src/interfaces/http/group/group.docs";
-import { GroupFacade } from "src/interfaces/http/group/group.service";
+import { GroupFacade } from "src/applications/group/group.facade.service";
 import { createGroupBodySchema, CreateGroupBodyDto } from "src/applications/group/dto/create-group-body.dto";
 import { updateGroupBodySchema, UpdateGroupBodyDto } from "src/applications/group/dto/update-group-body.dto";
 import {
@@ -24,7 +24,7 @@ export class GroupController {
     return this.groupFacade.save(createGroupBodyDto);
   }
 
-    @Get()
+  @Get()
   @ApiOperation(groupDocs.get_group)
   @TokenGuard(["admin"]) // atau sesuai role
   @EnsureValid(searchGroupQuerySchema, "query")
@@ -45,7 +45,7 @@ export class GroupController {
   @TokenGuard(["admin"])
   @EnsureValid(updateGroupBodySchema, "body")
   update(@Param("id") id: string, @Body() updateGroupBodyDto: UpdateGroupBodyDto) {
-    return this.groupFacade.updated(id, updateGroupBodyDto);
+    return this.groupFacade.update(id, updateGroupBodyDto);
   }
 
   @Delete(":id")

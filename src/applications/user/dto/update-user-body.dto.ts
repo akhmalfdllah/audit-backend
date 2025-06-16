@@ -12,13 +12,13 @@ export const updateUserBodySchema = z.object({
 type UpdateUserBodySchema = z.infer<typeof updateUserBodySchema>;
 export class UpdateUserBodyDto implements Omit<UpdateUserBodySchema, "group"> {
   @ApiProperty({ enum: UserRole, required: false })
-  role: UserRole;
+  role?: UserRole;
 
   @ApiProperty({ required: false })
-  group: string;
+  group?: string;
 }
 
-export class UpdateUserBodyTransformed extends OmitType(UpdateUserBodyDto, ["group"]) {
-  role: UserRole;
-  group: Group;
+export class UpdateUserBodyTransformed {
+  role?: UserRole;
+  group?: Group;
 }

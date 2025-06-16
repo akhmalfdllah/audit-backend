@@ -1,3 +1,4 @@
+// src/applications/user/dto/verify-user-body.dto.ts
 import z from "zod";
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -7,10 +8,11 @@ export const verifyUserBodySchema = z.object({
 });
 
 type VerifyUserBodySchema = z.infer<typeof verifyUserBodySchema>;
+
 export class VerifyUserBodyDto implements VerifyUserBodySchema {
-  @ApiProperty({ default: "root" })
+  @ApiProperty({ default: "admin" })
   username: string;
 
-  @ApiProperty({ default: "root" })
+  @ApiProperty({ default: "admin" })
   password: string;
 }

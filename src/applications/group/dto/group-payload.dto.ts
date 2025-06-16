@@ -1,5 +1,22 @@
-import { IntersectionType } from "@nestjs/swagger";
-import { Group } from "src/core/group/entities/group.entity";
+import { ApiProperty } from "@nestjs/swagger";
+import { UserPayloadDto } from "src/applications/user/dto/user-payload.dto"; // asumsinya sudah ada
 
-export class GroupPayloadDto extends IntersectionType(Group) {}
-export * from "src/core/group/entities/group.entity";
+export class GroupPayloadDto {
+    @ApiProperty()
+    id: string;
+
+    @ApiProperty()
+    name: string;
+
+    @ApiProperty()
+    description: string;
+
+    @ApiProperty({ type: [UserPayloadDto] })
+    members: UserPayloadDto[];
+
+    @ApiProperty()
+    createdAt: Date;
+
+    @ApiProperty()
+    updatedAt: Date;
+}

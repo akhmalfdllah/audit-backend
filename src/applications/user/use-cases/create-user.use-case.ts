@@ -14,8 +14,8 @@ export class CreateUserUseCase {
 
   async execute({ username, confirmPassword, ...bodyDto }: CreateUserBodyDto) {
     const user = await this.userRepository.findOneBy({ username });
-    if (user) throw new BadRequestException("user already exists!");
     if (bodyDto.password !== confirmPassword) throw new BadRequestException("confirm password not match!");
+    if (user) throw new BadRequestException("user already exists!");
 
     const password = await this.argonService.hashPassword(bodyDto.password);
     const saved = await this.userRepository.save({ ...bodyDto, username, password });

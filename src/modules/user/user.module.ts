@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
-import { UserController } from "src/interfaces/http/user/user.controller";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { UserORM } from "src/infrastructure/database/typeorm/entities/user.orm-entity";
 import { UserRepositoryImpl } from "src/infrastructure/database/repositories/user.repository.impl";
 import { GroupRepositoryImpl } from "src/infrastructure/database/repositories/group.repository.impl";
 
@@ -19,10 +20,15 @@ import {
 
 import { ArgonService } from "src/shared/services/argon.service";
 import { UserFacadeService } from "src/applications/user/user.facade.service";
+import { UserRepository } from "src/core/user/repositories/user.repository";
 
 @Module({
-    controllers: [UserController],
-    providers: [UserRepositoryImpl, GroupRepositoryImpl, ArgonService,
+    imports: [TypeOrmModule.forFeature([UserORM])],
+    providers: [
+        {
+            provide: UserRepository,
+            useClass: UserRepositoryImpl,
+        },
 
         CreateUserUseCase,
         FindAllUsersUseCase,
@@ -38,6 +44,6 @@ import { UserFacadeService } from "src/applications/user/user.facade.service";
 
         UserFacadeService,
     ],
-    exports: [UserFacadeService],
+    exports: [UserFacadeService, UserRepository],
 })
 export class UserModule { }

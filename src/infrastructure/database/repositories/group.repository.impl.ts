@@ -2,12 +2,15 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, FindOptionsRelations } from "typeorm";
 import { GroupORM } from "src/infrastructure/database/typeorm/entities/group.orm-entity";
-import { GroupRepository as AbsctractGroupRepo } from "src/core/group/repositories/group.repository";
+import { GroupRepository as AbstractGroupRepo } from "src/core/group/repositories/group.repository";
 import { Group } from "src/core/group/entities/group.entity";
 import { GroupMapper } from "src/infrastructure/database/typeorm/mappers/group.mapper";
 
+export const relations: FindOptionsRelations<GroupORM> = {
+    members: true
+};
 @Injectable()
-export class GroupRepositoryImpl implements AbsctractGroupRepo {
+export class GroupRepositoryImpl implements AbstractGroupRepo {
     constructor(
         @InjectRepository(GroupORM)
         private readonly ormRepo: Repository<GroupORM>,
@@ -21,7 +24,7 @@ export class GroupRepositoryImpl implements AbsctractGroupRepo {
             .getOne();
 
         if (!group) throw new Error('Group not found');
-        return group;
+        return GroupMapper.toDomain(group);
     }
 
     create(group: Partial<Group>): Group {
@@ -38,7 +41,7 @@ export class GroupRepositoryImpl implements AbsctractGroupRepo {
     }
 
     async find(domainOptions: Partial<Group>): Promise<Group[]> {
-        const ormOptions = { where: domainOptions }; // pastikan valid
+        const ormOptions = { where: GroupMapper.toOrm(domainOptions) };
         const groups = await this.ormRepo.find({ ...ormOptions, relations });
         return groups.map(GroupMapper.toDomain);
     }
@@ -62,8 +65,6 @@ export class GroupRepositoryImpl implements AbsctractGroupRepo {
     }
 }
 
-export const relations: FindOptionsRelations<GroupORM> = {
-    members: true
-};
+
 
 

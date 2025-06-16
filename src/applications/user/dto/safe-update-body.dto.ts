@@ -10,6 +10,9 @@ export const safeUpdateBodySchema = z.object({
 type SafeUpdateBodySchema = z.infer<typeof safeUpdateBodySchema>;
 export class SafeUpdateBodyDto implements SafeUpdateBodySchema {
   @ApiProperty()
+  username: string;
+
+  @ApiProperty()
   password: string;
 
   @ApiProperty()

@@ -10,4 +10,8 @@ export class ArgonService {
     async verifyPassword(hashedPassword: string, plainPassword: string): Promise<boolean> {
         return await argon.verify(hashedPassword, plainPassword, ArgonVerifyOptions);
       }
+
+    async verifyRefereshToken(hashedRefreshToken: string, refreshToken: string): Promise<boolean> {
+        return await argon.verify(hashedRefreshToken, refreshToken, ArgonVerifyOptions);
+      }
 }

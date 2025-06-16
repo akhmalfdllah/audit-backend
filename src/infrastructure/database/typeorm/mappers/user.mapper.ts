@@ -10,7 +10,7 @@ export class UserMapper {
       orm.password,
       orm.role,
       orm.refreshToken,
-        orm.groups?.map(GroupMapper.toDomain) ?? [],
+      orm.groups?.map(GroupMapper.toDomain) ?? [],
       orm.createdAt,
       orm.updatedAt,
     );
@@ -21,6 +21,7 @@ export class UserMapper {
     orm.id = domain.id;
     orm.username = domain.username;
     orm.password = domain.password;
+    orm.role = domain.role;
     orm.refreshToken = domain.refreshToken;
     orm.groups = domain.groups?.map(GroupMapper.toOrm) ?? [];
     orm.createdAt = domain.createdAt;

@@ -15,7 +15,7 @@ export class CreateUserBodyDto implements CreateUserBodySchema {
   username: string;
 
   @ApiProperty({ default: UserRole.User, required: false })
-  role: UserRole;
+  role?: UserRole;
 
   @ApiProperty({ default: "admin" })
   password: string;

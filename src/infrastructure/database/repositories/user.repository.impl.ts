@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, FindOptionsRelations } from "typeorm";
+import { Repository, FindOptionsRelations, FindManyOptions, FindOptionsWhere } from "typeorm";
 import { UserORM } from "src/infrastructure/database/typeorm/entities/user.orm-entity";
 import { User } from "src/core/user/entities/user.entity";
 import { UserRepository as AbstractUserRepo } from "src/core/user/repositories/user.repository";
@@ -12,7 +12,7 @@ export class UserRepositoryImpl implements AbstractUserRepo {
     @InjectRepository(UserORM)
     private readonly ormRepo: Repository<UserORM>,
   ) {}
-  async findOneBy(where: Partial<User>): Promise<User | null> {
+  async findOneBy(where: FindOptionsWhere<User>): Promise<User | null> {
     const ormUser = await this.ormRepo.findOne({ where, relations });
     return ormUser ? UserMapper.toDomain(ormUser) : null;
   }
@@ -22,19 +22,20 @@ export class UserRepositoryImpl implements AbstractUserRepo {
     return UserMapper.toDomain(ormUser);
   }
 
-  async find(options: object): Promise<User[]> {
+  async find(options: FindManyOptions<User>): Promise<User[]> {
     const ormUsers = await this.ormRepo.find({ ...options, relations });
     return ormUsers.map(UserMapper.toDomain);
   }
 
-  async save(user: Partial<User>): Promise<User> {
-    const ormUser = this.ormRepo.create(user); // conversion from domain to ORM
+    async save(user: Partial<User>): Promise<User> {
+    const ormUser = UserMapper.toORM(user as User); // mapping langsung
     const saved = await this.ormRepo.save(ormUser);
     return UserMapper.toDomain(saved);
   }
 
   async update(id: string, user: Partial<User>): Promise<User> {
-    await this.ormRepo.update(id, user);
+    const ormUser = UserMapper.toORM({ ...user, id } as User);
+    await this.ormRepo.update(id, ormUser);
     const updated = await this.ormRepo.findOneOrFail({ where: { id }, relations });
     return UserMapper.toDomain(updated);
   }
