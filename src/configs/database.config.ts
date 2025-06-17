@@ -26,10 +26,10 @@ export enum TableName {
     Transaction = "Transaction"
 }
 
-// export enum BooleanStatus {
-//     True = "true",
-//     False = "false",
-//   }
+export enum BooleanStatus {
+    True = "true",
+    False = "false",
+  }
 
 // export enum UserRole {
 //     User = "user",

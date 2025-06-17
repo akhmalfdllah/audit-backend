@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { TokenGuard, EnsureValid } from "src/shared/decorators/common.decorator";
 import { User } from "src/shared/decorators/params/user.decorator";
 import { userDocs } from "src/interfaces/http/user/user.docs";
-import { UserFacadeService } from "src/applications/user/user.facade.service";
+import { UserFacadeService } from "src/interfaces/http/user/user.facade.service";
 import { safeUpdateBodySchema, SafeUpdateBodyDto } from "src/applications/user/dto/safe-update-body.dto";
 import {
     updateUserBodySchema,

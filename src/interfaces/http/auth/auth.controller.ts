@@ -4,16 +4,16 @@ import { Response, Request } from "express";
 import { EnsureValid, RefreshTokenGuard } from "src/shared/decorators/common.decorator";
 import { User } from "src/shared/decorators/params/common.decorator";
 import { authDocs } from "./auth.docs";
-import { AuthService } from "src/interfaces/http/auth/auth.service";
+import { AuthFacadeService } from "src/interfaces/http/auth/auth.facade.service";
 import { CookieService } from "src/shared/services/cookie.service";
-import { signInBodySchema, SignInBodyDto } from "src/interfaces/http/auth/dto/signin-body.dto";
-import { signUpBodySchema, SignUpBodyDto } from "src/interfaces/http/auth/dto/signup-body.dto";
+import { signInBodySchema, SignInBodyDto } from "src/applications/auth/dto/signin-body.dto";
+import { signUpBodySchema, SignUpBodyDto } from "src/applications/auth/dto/signup-body.dto";
 import { DecodedUser } from "src/types/jwt.type";
 
 @Controller()
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
+    private readonly authFacadeService: AuthFacadeService,
     private readonly cookieService: CookieService,
   ) {}
 
@@ -21,14 +21,14 @@ export class AuthController {
   @ApiOperation(authDocs.post_signup)
   @EnsureValid(signUpBodySchema)
   async signUp(@Body() signUpBodyDto: SignUpBodyDto) {
-    return await this.authService.signUp(signUpBodyDto);
+    return await this.authFacadeService.signUp(signUpBodyDto);
   }
 
   @Post("signin")
   @ApiOperation(authDocs.post_signin)
   @EnsureValid(signInBodySchema)
   async signIn(@Body() signInBodyDto: SignInBodyDto, @Res() res: Response) {
-    const { jwtRefreshToken, ...payload } = await this.authService.signIn(signInBodyDto);
+    const { jwtRefreshToken, ...payload } = await this.authFacadeService.signIn(signInBodyDto);
     this.cookieService.setCookieRefreshToken(res, jwtRefreshToken);
     return res.status(HttpStatus.OK).send(payload);
   }
@@ -38,7 +38,7 @@ export class AuthController {
   @RefreshTokenGuard()
   async getNewAccessToken(@Req() req: Request, @User() user: DecodedUser) {
     const refreshToken = this.cookieService.getCookieRefreshToken(req);
-    return await this.authService.newAccessToken(user.id, refreshToken);
+    return await this.authFacadeService.newAccessToken(user.id, refreshToken);
   }
 
   @Delete("signout")
@@ -46,7 +46,7 @@ export class AuthController {
   @RefreshTokenGuard()
   async signOut(@Req() req: Request, @Res() res: Response, @User() user: DecodedUser) {
     const refreshToken = this.cookieService.getCookieRefreshToken(req);
-    const payload = await this.authService.signOut(user.id, refreshToken);
+    const payload = await this.authFacadeService.signOut(user.id, refreshToken);
     this.cookieService.clearCookieRefreshToken(res);
     return res.status(HttpStatus.OK).send(payload);
   }

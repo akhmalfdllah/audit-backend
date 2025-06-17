@@ -1,5 +1,3 @@
-// src/application/user/user.facade.service.ts
-
 import { Injectable } from "@nestjs/common";
 import {
     CreateUserUseCase,
@@ -13,7 +11,7 @@ import {
     SignOutUseCase,
     UpdateRefreshTokenUseCase,
     RetrieveGroupUseCase
-} from "./use-cases/common.use-case";
+} from "src/applications/user/use-cases/common.use-case";
 
 import {
     CreateUserBodyDto,
@@ -22,7 +20,7 @@ import {
     UpdateUserBodyTransformed,
     VerifyUserBodyDto,
     UserPayloadDto,
-} from "./dto";
+} from "src/applications/user/dto/common.dto";
 
 @Injectable()
 export class UserFacadeService {

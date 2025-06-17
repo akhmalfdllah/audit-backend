@@ -1,17 +1,17 @@
-// src/applications/group/group.facade.ts
-
 import { Injectable } from "@nestjs/common";
-import { CreateGroupUseCase } from "./use-cases/create-group.use-case";
-import { DeleteGroupUseCase } from "./use-cases/delete-group.use-case";
-import { FindAllGroupUseCase } from "./use-cases/find-all-group.use-case";
-import { FindOneGroupUseCase } from "./use-cases/find-one-group.use-case";
-import { UpdateGroupUseCase } from "./use-cases/update-group.use-case";
-import { CreateGroupBodyDto } from "./dto/create-group-body.dto";
-import { UpdateGroupBodyDto } from "./dto/update-group-body.dto";
-import { SearchGroupQueryTransformed } from "./dto/search-group-query.dto";
+import { CreateGroupBodyDto } from "src/applications/group/dto/create-group-body.dto";
+import { SearchGroupQueryTransformed } from "src/applications/group/dto/search-group-query.dto";
+import { UpdateGroupBodyDto } from "src/applications/group/dto/update-group-body.dto";
+import {
+    CreateGroupUseCase,
+    DeleteGroupUseCase,
+    FindAllGroupUseCase,
+    FindOneGroupUseCase,
+    UpdateGroupUseCase
+} from "src/applications/group/use-cases/common.use-case";
 
 @Injectable()
-export class GroupFacade {
+export class GroupFacadeService {
     constructor(
         private readonly createGroupUseCase: CreateGroupUseCase,
         private readonly deleteGroupUseCase: DeleteGroupUseCase,

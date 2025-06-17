@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from "@nestj
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { TokenGuard, EnsureValid } from "src/shared/decorators/common.decorator";
 import { groupDocs } from "src/interfaces/http/group/group.docs";
-import { GroupFacade } from "src/applications/group/group.facade.service";
+import { GroupFacadeService } from "src/interfaces/http/group/group.facade.service";
 import { createGroupBodySchema, CreateGroupBodyDto } from "src/applications/group/dto/create-group-body.dto";
 import { updateGroupBodySchema, UpdateGroupBodyDto } from "src/applications/group/dto/update-group-body.dto";
 import {
@@ -14,7 +14,7 @@ import {
 @ApiBearerAuth()
 @Controller("group")
 export class GroupController {
-  constructor(private readonly groupFacade: GroupFacade) { }
+  constructor(private readonly groupFacade: GroupFacadeService) { }
 
   @Post()
   @ApiOperation(groupDocs.post_group)
@@ -26,7 +26,7 @@ export class GroupController {
 
   @Get()
   @ApiOperation(groupDocs.get_group)
-  @TokenGuard(["admin"]) // atau sesuai role
+  @TokenGuard(["admin"])
   @EnsureValid(searchGroupQuerySchema, "query")
   async findAll(@Query() searchGroupQueryDto: SearchGroupQueryDto) {
     const searchGroupQuery = searchGroupQueryDto as unknown as SearchGroupQueryTransformed;
