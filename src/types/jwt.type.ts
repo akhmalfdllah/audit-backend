@@ -11,3 +11,8 @@ export interface DecodedUser extends JwtPayload {
   exp: number;
 }
 
+declare module 'express' {
+  interface Request {
+    user?: JwtPayload;
+  }
+}

@@ -3,7 +3,7 @@ import { Group } from "src/core/group/entities/group.entity";
 // src/domain/user/entities/user.entity.ts
 export enum UserRole {
     User = "user",
-    Admin = "admin",
+    Auditor = "auditor",
 }
 export class User {
     constructor(

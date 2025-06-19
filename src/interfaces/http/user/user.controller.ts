@@ -1,5 +1,6 @@
 import { Controller, Get, Body, Patch, Param, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
+import { UseInterceptors } from '@nestjs/common';
 import { TokenGuard, EnsureValid } from "src/shared/decorators/common.decorator";
 import { User } from "src/shared/decorators/params/user.decorator";
 import { userDocs } from "src/interfaces/http/user/user.docs";
@@ -16,6 +17,8 @@ import {
     SearchUserQueryDto,
 } from "src/applications/user/dto/search-user-query.dto";
 import { DecodedUser } from "src/types/jwt.type";
+import { AuditLogInterceptor } from "src/shared/interceptors/audit-log.interceptor";
+import { AuditAction } from "src/shared/decorators/audit.decorator";
 
 @Controller("user")
 @ApiBearerAuth()
@@ -54,6 +57,8 @@ export class UserController {
     }
 
     @Patch(":id")
+    @AuditAction("Update User by Admin")
+    @UseInterceptors(AuditLogInterceptor)
     @ApiOperation(userDocs.patch_userId)
     @TokenGuard(["admin"])
     @EnsureValid(updateUserBodySchema, "body")

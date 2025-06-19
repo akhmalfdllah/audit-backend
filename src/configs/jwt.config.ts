@@ -28,6 +28,7 @@ export const JwtRefreshSignOptions: JwtSignOptions = {
 // role-guard
 export const JwtRoleKey = JWT_ROLE_KEY;
 
+
 // custom-jwt
 export const JwtCommonSecretKey = JWT_COMMON_SECRECT_KEY;
 export const JwtCommonSignOptions: JwtSignOptions = {

@@ -21,9 +21,12 @@ import {
 import { ArgonService } from "src/shared/services/argon.service";
 import { UserFacadeService } from "src/applications/user/user.facade.service";
 import { UserRepository } from "src/core/user/repositories/user.repository";
+import { User } from "src/shared/decorators/params/user.decorator";
+import { UserController } from "src/interfaces/http/user/user.controller";
 
 @Module({
     imports: [TypeOrmModule.forFeature([UserORM])],
+    controllers: [UserController],
     providers: [
         {
             provide: UserRepository,

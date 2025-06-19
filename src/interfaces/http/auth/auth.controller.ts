@@ -10,7 +10,7 @@ import { signInBodySchema, SignInBodyDto } from "src/applications/auth/dto/signi
 import { signUpBodySchema, SignUpBodyDto } from "src/applications/auth/dto/signup-body.dto";
 import { DecodedUser } from "src/types/jwt.type";
 
-@Controller()
+@Controller("auth")
 export class AuthController {
   constructor(
     private readonly authFacadeService: AuthFacadeService,

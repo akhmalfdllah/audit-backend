@@ -23,6 +23,7 @@ export const DatabaseConfig: TypeOrmModuleOptions = {
 export enum TableName {
     User = "User",
     Group = "Group",
+    AuditLog = "AuditLog",
     Transaction = "Transaction"
 }
 
