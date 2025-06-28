@@ -1,13 +1,21 @@
-// src/applications/user/dto/user-payload.dto.ts
-
+// user-payload.dto.ts
 import { Expose, Transform } from "class-transformer";
 import { ApiProperty, getSchemaPath } from "@nestjs/swagger";
+import { UserRole, UserStatus } from "src/core/user/entities/user.entity";
 import { Action, Link } from "src/shared/extra-dto/base/common.dto";
-import { UserRole } from "src/core/user/entities/user.entity";
-import { Group } from "src/core/group/entities/group.entity";
 
-// Base DTO
-export class UserBaseDto {
+
+export class GroupSummaryDto {
+  @ApiProperty()
+  @Expose()
+  id: string;
+
+  @ApiProperty()
+  @Expose()
+  name: string;
+}
+// DTO utama untuk User
+export class UserPayloadDto {
   @ApiProperty()
   @Expose()
   id: string;
@@ -20,6 +28,15 @@ export class UserBaseDto {
   @Expose()
   role: UserRole;
 
+  @ApiProperty({ enum: UserStatus })
+  @Expose()
+  status: UserStatus;
+
+  @ApiProperty({ type: () => GroupSummaryDto, nullable: true })
+  @Expose()
+  group: GroupSummaryDto | null;
+
+
   @ApiProperty({ type: () => Date })
   @Expose()
   createdAt: Date;
@@ -28,13 +45,6 @@ export class UserBaseDto {
   @Expose()
   updatedAt: Date;
 
-  @ApiProperty({ type: () => [String] })
-  @Expose()
-  groups: Group[]; // or group names/ids depending on need
-}
-
-// Enrich with action & link
-export class UserPayloadDto extends UserBaseDto {
   @ApiProperty({ type: [Action] })
   @Expose()
   _action: Action[];
@@ -48,9 +58,10 @@ export class UserPayloadDto extends UserBaseDto {
   _link: Record<string, Link>;
 }
 
-// Extracted for clarity/testability
+// Link generator
 export function transformLinks(user: { id: string }): Record<string, Link> {
-  const self = new Link(`/user/${user.id}`);
-  const group = new Link(`/group?member=${user.id}`);
-  return { self, group };
+  const self = new Link(`/users/${user.id}`);
+  const audit = new Link(`/audit-logs?actor=${user.id}`);
+  const tx = new Link(`/transactions?submittedBy=${user.id}`);
+  return { self, audit, transactions: tx };
 }

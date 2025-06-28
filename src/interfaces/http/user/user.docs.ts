@@ -1,6 +1,6 @@
 import type { ApiOperationOptions } from "@nestjs/swagger";
 
-type UserRoute = "get_user" | "get_userGroup" | "patch_user" | "get_userId" | "patch_userId";
+type UserRoute = "get_user" | "get_userGroup" | "patch_user" | "get_userId" | "patch_userId" | "delete_user" | "create_user";
 export const userDocs: Record<UserRoute, ApiOperationOptions> = {
   get_user: {
     description: `The endpoint (when used to list users) retrieves a collection of user profiles available in the system.
@@ -27,5 +27,11 @@ export const userDocs: Record<UserRoute, ApiOperationOptions> = {
     This includes administrative fields such as **role**, **group**, or other non-personal settings.
     Authentication and appropriate permissions are required to access this endpoint.
     The provided data is validated before being applied to ensure consistency and security`,
+  },
+  delete_user: {
+    description: `The endpoint deletes a user's account.`,
+  },
+  create_user: {
+    description: `The endpoint creates a new user account.`,
   },
 };

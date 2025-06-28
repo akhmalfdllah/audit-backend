@@ -1,6 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import type { Request, Response } from "express";
-import { JwtRefreshCookieName, JwtRefreshCookieOptions } from "src/configs/cookie.config";
+import {
+    JwtRefreshCookieName,
+    JwtRefreshCookieOptions,
+} from "src/configs/cookie.config";
 
 @Injectable()
 export class CookieService {
@@ -9,12 +12,22 @@ export class CookieService {
     }
 
     setCookieRefreshToken(res: Response, refreshToken: string): void {
-        res.cookie(JwtRefreshCookieName, refreshToken, JwtRefreshCookieOptions);
-        return;
+        res.cookie(JwtRefreshCookieName, refreshToken, {
+            ...JwtRefreshCookieOptions,
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
+        });
     }
 
     clearCookieRefreshToken(res: Response): void {
-        res.clearCookie(JwtRefreshCookieName);
-        return;
+        res.clearCookie(JwtRefreshCookieName, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            path: "/",
+        });
     }
 }

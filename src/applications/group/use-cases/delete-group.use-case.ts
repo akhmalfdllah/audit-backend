@@ -1,13 +1,15 @@
-import { BadRequestException } from '@nestjs/common';
-import { GroupRepository } from 'src/core/group/repositories/group.repository';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { GroupRepository } from "src/infrastructure/database/repositories/group.repository.impl";
 
+@Injectable()
 export class DeleteGroupUseCase {
-    constructor(private readonly groupRepository: GroupRepository) { }
+    constructor(private readonly groupRepo: GroupRepository) { }
 
-    async execute(id: string) {
-        const group = await this.groupRepository.findOneByOrFail({ id }).catch(() => {
-            throw new BadRequestException('group not found!');
-        });
-        return await this.groupRepository.remove(group);
+    async execute(groupId: string) {
+        const existing = await this.groupRepo.findById(groupId);
+        if (!existing) throw new NotFoundException("Group not found");
+
+        await this.groupRepo.remove(groupId);
+        return { message: "Group deleted successfully" };
     }
 }

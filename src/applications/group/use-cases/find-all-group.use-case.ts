@@ -1,15 +1,13 @@
-import { plainToInstance } from "class-transformer";
-import { GroupRepository } from "src/core/group/repositories/group.repository";
-import { SearchGroupQueryTransformed } from "src/applications/group/dto/search-group-query.dto";
-import { GroupPayloadDto } from "src/applications/group/dto/group-payload.dto";
+import { Injectable } from "@nestjs/common";
+import { GroupRepository } from "src/infrastructure/database/repositories/group.repository.impl";
+import { GroupORMMapper } from "src/infrastructure/database/typeorm/mappers/group.mapper";
 
-export class FindAllGroupUseCase {
-    constructor(private readonly groupRepository: GroupRepository) { }
+@Injectable()
+export class FindAllGroupsUseCase {
+    constructor(private readonly repo: GroupRepository) { }
 
-    async execute({ member }: SearchGroupQueryTransformed) {
-        const groups = await this.groupRepository.find({
-            where: { members: { id: member.id } },
-        });
-        return plainToInstance(GroupPayloadDto, groups);
+    async execute() {
+        const groups = await this.repo.findAll();
+        return groups.map(GroupORMMapper.toResponse);
     }
 }

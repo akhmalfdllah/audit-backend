@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, JoinTable, ManyToMany } from "typeorm";
-import { UserRole } from "src/core/user/entities/user.entity";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, JoinColumn } from "typeorm";
 import { GroupORM } from "src/infrastructure/database/typeorm/entities/group.orm-entity";
+import { UserRole, UserStatus } from "src/core/user/entities/user.entity";
 import { TableName } from "src/configs/database.config";
 
 @Entity({ name: TableName.User })
@@ -14,20 +14,31 @@ export class UserORM {
     @Column()
     password: string;
 
-    @Column({ type: "enum", enum: UserRole, default: UserRole.User })
+    @Column()
     role: UserRole;
+
+    @Column({ nullable: true })
+    email: string | null;
+
+    @Column({ nullable: true })
+    fullName: string | null;
+
+    @Column({ nullable: true })
+    status: UserStatus;
 
     @Column({ nullable: true })
     refreshToken: string | null;
 
-    @ManyToMany(() => GroupORM, (group) => group.members)
-    @JoinTable()
-    groups: GroupORM[];
+    @ManyToOne(() => GroupORM, (group) => group.members, { nullable: true })
+    @JoinColumn({ name: "groupId" })
+    group: GroupORM;
 
+    @Column({ nullable: true })
+    groupId: string;
 
-    @CreateDateColumn({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     createdAt: Date;
 
-    @UpdateDateColumn({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     updatedAt: Date;
 }

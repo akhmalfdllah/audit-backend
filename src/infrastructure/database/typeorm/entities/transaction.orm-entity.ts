@@ -16,14 +16,23 @@ export class TransactionORM {
     @Column()
     title: string;
 
-    @Column('decimal')
+    @Column('numeric')
     amount: number;
+
+    @Column()
+    category: string;
+
+    @Column({ nullable: true })
+    description: string;
+
+    @Column({ default: 'PENDING' })
+    status: TransactionStatus;
 
     @Column()
     submittedBy: string;
 
-    @Column({ type: 'enum', enum: TransactionStatus, default: TransactionStatus.PENDING })
-    status: TransactionStatus;
+    @Column({ nullable: true })
+    approvedBy: string;
 
     @CreateDateColumn()
     createdAt: Date;

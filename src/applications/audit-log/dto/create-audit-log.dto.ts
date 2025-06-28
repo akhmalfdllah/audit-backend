@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ApiProperty } from '@nestjs/swagger';
+import { AuditAction } from 'src/core/audit-log/entities/audit-log.entity';
 
 // Zod schema
 export const CreateAuditLogZodSchema = z.object({
@@ -15,8 +16,8 @@ export class CreateAuditLogDto {
     @ApiProperty()
     actorId: string;
 
-    @ApiProperty()
-    action: string;
+    @ApiProperty({ enum: AuditAction })
+    action: AuditAction;
 
     @ApiProperty()
     targetEntity: string;

@@ -7,7 +7,7 @@ import { UserPayloadDto } from "src/applications/user/dto/user-payload.dto";
 export class FindOneUserUseCase {
     constructor(private readonly userRepository: UserRepository) { }
 
-    async execute(id: string) {
+    async execute(id: string): Promise<UserPayloadDto> {
         if (!id) {
             throw new BadRequestException("id is required");
         }

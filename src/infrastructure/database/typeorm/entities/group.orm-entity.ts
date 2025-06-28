@@ -4,10 +4,11 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    ManyToMany,
+    OneToMany,
 } from "typeorm";
 import { UserORM } from "./user.orm-entity";
 import { TableName } from "src/configs/database.config";
+import { GroupType } from "src/core/group/entities/group.entity";
 
 @Entity({ name: TableName.Group })
 export class GroupORM {
@@ -20,7 +21,10 @@ export class GroupORM {
     @Column({ nullable: false })
     description: string;
 
-    @ManyToMany(() => UserORM, (user) => user.groups)
+    @Column()
+    type: GroupType;
+
+    @OneToMany(() => UserORM, (user) => user.group)
     members: UserORM[];
 
     @CreateDateColumn()

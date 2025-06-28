@@ -25,12 +25,17 @@ export class TransactionRepositoryImpl extends AbstractTransactionRepo {
         return found ? TransactionMapper.toDomain(found) : null;
     }
 
-    async findAllByUser(userId: string): Promise<Transaction[]> {
-        const all = await this.repo.find({ where: { submittedBy: userId } });
+    async findAll(): Promise<Transaction[]> {
+        const all = await this.repo.find();
         return all.map((t) => TransactionMapper.toDomain(t));
     }
 
-    async updateStatus(id: string, status: string): Promise<void> {
-        await this.repo.update(id, { status: () => status });
+    async update(trx: Transaction): Promise<Transaction> {
+        const orm = TransactionMapper.toORM(trx);
+        const saved = await this.repo.save(orm); // TypeORM's save() = insert or update
+        return TransactionMapper.toDomain(saved);
     }
+
+
+
 }

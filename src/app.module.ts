@@ -6,7 +6,7 @@ import { UserModule } from './modules/user/user.module';
 import { GroupModule } from './modules/group/group.module';
 import { AppErrorFilter } from './shared/filters/app-error.filter';
 import { DatabaseConfig } from './configs/database.config';
-import { RolesGuard } from './shared/guards/roles.guard';
+import { JwtRolesGuard } from './shared/guards/jwt-role.guard';
 import { JwtAccessGuard } from './shared/guards/jwt-access.guard';
 
 @Module({
@@ -19,7 +19,7 @@ import { JwtAccessGuard } from './shared/guards/jwt-access.guard';
   providers: [
     { provide: APP_FILTER, useClass: AppErrorFilter },
     { provide: APP_GUARD, useClass: JwtAccessGuard },
-    { provide: APP_GUARD, useClass: RolesGuard },
+    { provide: APP_GUARD, useClass: JwtRolesGuard },
   ],
 })
 export class AppModule { }

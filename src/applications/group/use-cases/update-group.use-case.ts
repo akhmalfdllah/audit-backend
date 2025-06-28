@@ -1,19 +1,21 @@
-import { NotFoundException } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
-import { GroupRepository } from 'src/core/group/repositories/group.repository';
-import { UpdateGroupBodyDto } from 'src/applications/group/dto/update-group-body.dto';
-import { GroupPayloadDto } from 'src/applications/group/dto/group-payload.dto';
-import { mapUpdateGroupDtoToDomain } from 'src/applications/group/group.mapper';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { UpdateGroupBodyDto } from '../dto/update-group-body.dto';
+import { GroupRepository } from 'src/infrastructure/database/repositories/group.repository.impl';
+import { GroupORMMapper } from 'src/infrastructure/database/typeorm/mappers/group.mapper';
 
+@Injectable()
 export class UpdateGroupUseCase {
-    constructor(private readonly groupRepository: GroupRepository) { }
+    constructor(private readonly groupRepo: GroupRepository) { }
 
-    async execute(id: string, updateGroupBodyDto: UpdateGroupBodyDto) {
-        const group = await this.groupRepository.findOneByOrFail({ id }).catch(() => {
-            throw new NotFoundException('group not found!');
-        });
-        const updatedGroup = mapUpdateGroupDtoToDomain(group, updateGroupBodyDto);
-        const updated = await this.groupRepository.save(updatedGroup);
-        return plainToInstance(GroupPayloadDto, updated);
+    async execute(groupId: string, dto: UpdateGroupBodyDto) {
+        const existing = await this.groupRepo.findById(groupId);
+        if (!existing) throw new NotFoundException('Group not found');
+
+        if (dto.name) existing.name = dto.name;
+        if (dto.description) existing.description = dto.description;
+        if (dto.type) existing.type = dto.type;
+
+        const updated = await this.groupRepo.update(existing);
+        return GroupORMMapper.toResponse(updated);
     }
 }

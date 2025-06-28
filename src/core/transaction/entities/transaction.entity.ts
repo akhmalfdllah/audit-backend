@@ -9,9 +9,12 @@ export class Transaction {
         public id: string | null,
         public title: string,
         public amount: number,
-        public submittedBy: string, // userId
+        public category: string,
+        public description: string | null,
         public status: TransactionStatus,
-        public createdAt: Date,
-        public updatedAt: Date,
+        public submittedBy: string, // userId
+        public approvedBy: string | null,
+        public createdAt: Date | null,
+        public updatedAt: Date | null
     ) { }
 }

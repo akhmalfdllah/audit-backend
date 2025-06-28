@@ -1,16 +1,20 @@
-import z from "zod";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { z } from "zod";
+import { GroupType } from "src/core/group/entities/group.entity";
 
 export const updateGroupBodySchema = z.object({
-  name: z.string().trim().min(1, { message: "name can't be empty" }).toLowerCase().optional(),
-  description: z.string().trim().min(1, { message: "description can't be empty" }).optional(),
+  name: z.string().min(1).optional(),
+  description: z.string().min(1).optional(),
+  type: z.nativeEnum(GroupType).optional(),
 });
 
-type UpdateGroupBodySchema = z.infer<typeof updateGroupBodySchema>;
-export class UpdateGroupBodyDto implements Partial<UpdateGroupBodySchema> {
-  @ApiProperty({ required: false })
-  name: string;
+export class UpdateGroupBodyDto implements z.infer<typeof updateGroupBodySchema> {
+  @ApiPropertyOptional()
+  name?: string;
 
-  @ApiProperty({ required: false })
-  description: string;
+  @ApiPropertyOptional()
+  description?: string;
+
+  @ApiPropertyOptional({ enum: GroupType })
+  type?: GroupType;
 }

@@ -1,30 +1,68 @@
-import { Controller, Post, Patch, Body, Req, UseGuards } from '@nestjs/common';
-import { CreateTransactionSchema } from 'src/applications/transaction/dto/create-transaction.dto';
-import { UpdateTransactionStatusSchema } from 'src/applications/transaction/dto/update-transaction-status.dto';
-import { ZodValidationPipe } from 'src/shared/pipes/zod-validation.pipe';
+import {
+    Body,
+    Controller,
+    Post,
+    Req,
+    UseGuards, Get, Put, Param
+} from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { TransactionFacade } from './transaction.facade';
-import { Roles } from 'src/shared/decorators/roles.decorator';
-import { UserRole } from 'src/core/user/entities/user.entity';
+import { CreateTransactionZodSchema, CreateTransactionDto } from 'src/applications/transaction/dto/create-transaction.dto';
+import { ApiKeyGuard } from 'src/shared/guards/api-key.guard';
+import { TokenGuard, EnsureValid } from 'src/shared/decorators/common.decorator';
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
+import { UserPayloadDto } from 'src/applications/user/dto/user-payload.dto';
+import { ApproveTransactionDto, ApproveTransactionZodSchema } from 'src/applications/transaction/dto/approve-transaction.dto';
 
+@ApiTags('Transactions')
 @Controller('transactions')
 export class TransactionController {
-    constructor(private readonly facade: TransactionFacade) { }
+    constructor(private readonly transactionFacade: TransactionFacade) { }
 
+    // ✅ Untuk user staff/admin
     @Post()
-    @Roles(UserRole.User)
-    async create(
-        @Body(new ZodValidationPipe(CreateTransactionSchema)) body,
-        @Req() req: any,
+    @ApiOperation({ summary: 'Create transaction (by user)' })
+    @TokenGuard(['user', 'admin'])
+    @EnsureValid(CreateTransactionZodSchema, 'body')
+    async createByUser(
+        @CurrentUser() user: UserPayloadDto,
+        @Body() dto: CreateTransactionDto,
     ) {
-        return await this.facade.create({ ...body, submittedBy: req.user.id });
+        return this.transactionFacade.create(dto, user.id);
     }
 
-    @Patch('/status')
-    @Roles(UserRole.Auditor)
-    async updateStatus(
-        @Body(new ZodValidationPipe(UpdateTransactionStatusSchema)) body,
-        @Req() req: any,
+    // ✅ Untuk sistem ERP
+    @Post('from-erp')
+    @ApiOperation({ summary: 'Create transaction (from ERP system)' })
+    @UseGuards(ApiKeyGuard)
+    @EnsureValid(CreateTransactionZodSchema, 'body')
+    async createFromERP(
+        //@Req() req: Request,
+        @Body() dto: CreateTransactionDto,
     ) {
-        return await this.facade.updateStatus(body, req.user.id);
+        // ID sistem/ERP ditentukan dari server config atau header custom
+        const erpSystemId = process.env.ERP_SUBMITTER_ID ?? 'SYSTEM_ERP';
+        return this.transactionFacade.create(dto, erpSystemId);
     }
+
+    @Get()
+    @TokenGuard(['auditor', 'admin'])
+    @ApiOperation({ summary: 'Get all transactions' })
+    async findAll() {
+        return this.transactionFacade.findAll();
+    }
+
+
+@Put(':id/approval')
+@TokenGuard(['auditor', 'admin'])
+@EnsureValid(ApproveTransactionZodSchema, 'body')
+@ApiOperation({ summary: 'Approve or reject transaction' })
+async approveReject(
+    @Param('id') id: string,
+    @CurrentUser() user: UserPayloadDto,
+    @Body() dto: ApproveTransactionDto,
+) {
+    return this.transactionFacade.approveReject(id, dto.decision, user.id);
+}
+
 }

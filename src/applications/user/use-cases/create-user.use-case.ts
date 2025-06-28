@@ -4,21 +4,53 @@ import { ArgonService } from "src/shared/services/argon.service";
 import { UserRepository } from "src/core/user/repositories/user.repository";
 import { CreateUserBodyDto } from "src/applications/user/dto/create-user-body.dto";
 import { UserPayloadDto } from "src/applications/user/dto/user-payload.dto";
+import { GroupRepository } from "src/core/group/repositories/group.repository";
+import { AuditLogFacade } from "src/interfaces/http/audit-log/audit-log.facade";
+import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
 
 @Injectable()
 export class CreateUserUseCase {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly argonService: ArgonService,
+    private readonly groupRepository: GroupRepository,
+    private readonly auditLogFacade: AuditLogFacade
   ) { }
 
-  async execute({ username, confirmPassword, ...bodyDto }: CreateUserBodyDto) {
-    const user = await this.userRepository.findOneBy({ username });
-    if (bodyDto.password !== confirmPassword) throw new BadRequestException("confirm password not match!");
-    if (user) throw new BadRequestException("user already exists!");
+  async execute(dto: CreateUserBodyDto) {
+    const { username, password, confirmPassword, groupIds, actorId, ...rest } = dto;
 
-    const password = await this.argonService.hashPassword(bodyDto.password);
-    const saved = await this.userRepository.save({ ...bodyDto, username, password });
+    if (password !== confirmPassword) {
+      throw new BadRequestException("confirm password not match!");
+    }
+
+    const existing = await this.userRepository.findOneBy({ username });
+    if (existing) throw new BadRequestException("user already exists!");
+
+    const hashedPassword = await this.argonService.hashPassword(password);
+
+    // Ambil Group entity berdasarkan ID (kalau relasi banyak-to-banyak)
+    const [group] = await this.groupRepository.findByIdsOrThrow(groupIds);
+
+    const saved = await this.userRepository.save({
+      ...rest,
+      username,
+      password: hashedPassword,
+      group,
+    });
+
+    await this.auditLogFacade.create({
+      actorId,
+      action: AuditAction.CREATE_USER,
+      targetEntity: 'User',
+      targetId: saved.id,
+      metadata: {
+        username: saved.username,
+        role: saved.role,
+        groupIds: saved.group ? [saved.group.id] : [], // ✅ array dari 1 ID
+      },
+    });
+
     return plainToInstance(UserPayloadDto, saved);
   }
 }

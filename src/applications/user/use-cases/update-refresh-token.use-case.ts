@@ -12,7 +12,8 @@ export class UpdateRefreshTokenUseCase {
             throw new NotFoundException("user not found!");
         });
 
-        const updated = await this.userRepository.update(userId, { refreshToken });
-        return plainToInstance(UserPayloadDto, updated);
+        await this.userRepository.update(userId, { refreshToken });
+        const updatedUser = await this.userRepository.findOneByOrFail({ id: userId });
+        return plainToInstance(UserPayloadDto, updatedUser, { excludeExtraneousValues: true });
     }
 }

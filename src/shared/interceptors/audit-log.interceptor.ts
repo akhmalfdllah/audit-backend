@@ -6,8 +6,10 @@ import {
 } from "@nestjs/common";
 import { Observable, tap } from "rxjs";
 import { Reflector } from "@nestjs/core";
-import { AuditLogFacade } from "src/interfaces/http/audit-log/audit-log.facade";
 import { Request } from "express";
+import { AuditLogFacade } from "src/interfaces/http/audit-log/audit-log.facade";
+import { AUDIT_ACTION_KEY } from "src/shared/decorators/audit-action.decorator";
+import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
 
 @Injectable()
 export class AuditLogInterceptor implements NestInterceptor {
@@ -20,10 +22,10 @@ export class AuditLogInterceptor implements NestInterceptor {
         const req: Request = context.switchToHttp().getRequest();
 
         // Ambil metadata custom kalau ada
-        const action =
-            this.reflector.get<string>('auditAction', context.getHandler()) ??
-            `${req.method} ${req.url}`;
-
+        const action = this.reflector.get<string>(
+            AUDIT_ACTION_KEY,
+            context.getHandler(),
+        ) ?? `${req.method} ${req.url}`;
         const user = req.user as { id: string } | undefined;
 
         return next.handle().pipe(
@@ -32,7 +34,7 @@ export class AuditLogInterceptor implements NestInterceptor {
                 if (user?.id) {
                     await this.auditLogFacade.create({
                         actorId: user.id,
-                        action,
+                        action: action as AuditAction,
                         targetEntity: req.baseUrl.replace('/', ''),
                         targetId: req.params['id'] ?? req.body?.id ?? 'unknown',
                         metadata: {

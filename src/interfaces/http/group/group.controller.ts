@@ -5,11 +5,9 @@ import { groupDocs } from "src/interfaces/http/group/group.docs";
 import { GroupFacadeService } from "src/interfaces/http/group/group.facade.service";
 import { createGroupBodySchema, CreateGroupBodyDto } from "src/applications/group/dto/create-group-body.dto";
 import { updateGroupBodySchema, UpdateGroupBodyDto } from "src/applications/group/dto/update-group-body.dto";
-import {
-  searchGroupQuerySchema,
-  SearchGroupQueryTransformed,
-  SearchGroupQueryDto,
-} from "src/applications/group/dto/search-group-query.dto";
+import { UserPayloadDto } from "src/applications/user/dto/user-payload.dto";
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
+
 
 @ApiBearerAuth()
 @Controller("group")
@@ -17,20 +15,20 @@ export class GroupController {
   constructor(private readonly groupFacade: GroupFacadeService) { }
 
   @Post()
-  @ApiOperation(groupDocs.post_group)
   @TokenGuard(["admin"])
   @EnsureValid(createGroupBodySchema, "body")
-  create(@Body() createGroupBodyDto: CreateGroupBodyDto) {
-    return this.groupFacade.save(createGroupBodyDto);
+  async create(
+    @Body() dto: CreateGroupBodyDto,
+    @CurrentUser() user: UserPayloadDto,
+  ) {
+    return this.groupFacade.save(dto, user);
   }
 
   @Get()
-  @ApiOperation(groupDocs.get_group)
+  @ApiOperation(groupDocs.get_all_group)
   @TokenGuard(["admin"])
-  @EnsureValid(searchGroupQuerySchema, "query")
-  async findAll(@Query() searchGroupQueryDto: SearchGroupQueryDto) {
-    const searchGroupQuery = searchGroupQueryDto as unknown as SearchGroupQueryTransformed;
-    return this.groupFacade.findAll(searchGroupQuery);
+  async findAll() {
+    return this.groupFacade.findAll();
   }
 
   @Get(":id")
@@ -41,11 +39,14 @@ export class GroupController {
   }
 
   @Patch(":id")
-  @ApiOperation(groupDocs.patch_groupId)
   @TokenGuard(["admin"])
   @EnsureValid(updateGroupBodySchema, "body")
-  update(@Param("id") id: string, @Body() updateGroupBodyDto: UpdateGroupBodyDto) {
-    return this.groupFacade.update(id, updateGroupBodyDto);
+  @ApiOperation(groupDocs.get_groupId)
+  async update(
+    @Param("id") id: string,
+    @Body() dto: UpdateGroupBodyDto
+  ) {
+    return this.groupFacade.update(id, dto);
   }
 
   @Delete(":id")

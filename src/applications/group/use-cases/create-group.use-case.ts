@@ -1,24 +1,29 @@
-// src/applications/group/use-cases/create-group.usecase.ts
-import { ConflictException } from "@nestjs/common";
-import { plainToInstance } from "class-transformer";
+import { Injectable } from "@nestjs/common";
+import { AuditLogFacade } from "src/interfaces/http/audit-log/audit-log.facade";
+import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
+import { CreateGroupBodyDto } from "src/applications/group/dto/create-group-body.dto";
+import { GroupORMMapper } from "src/infrastructure/database/typeorm/mappers/group.mapper";
 import { GroupRepository } from "src/core/group/repositories/group.repository";
-import { CreateGroupBodyDto } from "../dto/create-group-body.dto";
-import { GroupPayloadDto } from "../dto/group-payload.dto";
-import { mapCreateGroupDtoToDomain } from "src/applications/group/group.mapper";
 
+@Injectable()
 export class CreateGroupUseCase {
-  constructor(private readonly groupRepository: GroupRepository) {}
+  constructor(
+    private readonly repo: GroupRepository,
+    private readonly auditLogFacade: AuditLogFacade
+  ) { }
 
-  async execute(createGroupBodyDto: CreateGroupBodyDto) {
-    const existGroup = await this.groupRepository.findOneBy({ name: createGroupBodyDto.name });
-    if (existGroup) {
-      throw new ConflictException("group name already exists!");
-    }
+  async execute(dto: CreateGroupBodyDto, actor: { id: string }) {
+    const group = GroupORMMapper.fromCreateDto(dto);
+    const saved = await this.repo.save(group);
 
-    const domainPartial = mapCreateGroupDtoToDomain(createGroupBodyDto);
-    const groupEntity = this.groupRepository.create(domainPartial);
-    const savedGroup = await this.groupRepository.save(groupEntity);
+    await this.auditLogFacade.create({
+      actorId: actor.id,
+      action: AuditAction.CREATE_GROUP,
+      targetEntity: "Group",
+      targetId: saved.id,
+      metadata: { name: saved.name, type: saved.type }
+    });
 
-    return plainToInstance(GroupPayloadDto, savedGroup);
+    return GroupORMMapper.toResponse(saved);
   }
 }

@@ -1,69 +1,128 @@
-import { Controller, Get, Body, Patch, Param, Query } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
-import { UseInterceptors } from '@nestjs/common';
-import { TokenGuard, EnsureValid } from "src/shared/decorators/common.decorator";
-import { User } from "src/shared/decorators/params/user.decorator";
-import { userDocs } from "src/interfaces/http/user/user.docs";
-import { UserFacadeService } from "src/interfaces/http/user/user.facade.service";
-import { safeUpdateBodySchema, SafeUpdateBodyDto } from "src/applications/user/dto/safe-update-body.dto";
+import {
+    Controller,
+    Get,
+    Body,
+    Patch,
+    Param,
+    Query,
+    UseInterceptors,
+    Post,
+    Delete,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import {
+    TokenGuard,
+    EnsureValid,
+} from 'src/shared/decorators/common.decorator';
+import { User } from 'src/shared/decorators/params/user.decorator';
+import { userDocs } from 'src/interfaces/http/user/user.docs';
+import { UserFacadeService } from 'src/interfaces/http/user/user.facade.service';
+import {
+    safeUpdateBodySchema,
+    SafeUpdateBodyDto,
+} from 'src/applications/user/dto/safe-update-body.dto';
 import {
     updateUserBodySchema,
     UpdateUserBodyTransformed,
     UpdateUserBodyDto,
-} from "src/applications/user/dto/update-user-body.dto";
+} from 'src/applications/user/dto/update-user-body.dto';
 import {
     searchUserQuerySchema,
     SearchUserQueryTransformed,
     SearchUserQueryDto,
-} from "src/applications/user/dto/search-user-query.dto";
-import { DecodedUser } from "src/types/jwt.type";
-import { AuditLogInterceptor } from "src/shared/interceptors/audit-log.interceptor";
-import { AuditAction } from "src/shared/decorators/audit.decorator";
+} from 'src/applications/user/dto/search-user-query.dto';
+import { DecodedUser } from 'src/types/jwt.type';
+import { AuditLogInterceptor } from 'src/shared/interceptors/audit-log.interceptor';
+import { UserPayloadDto } from 'src/applications/user/dto/user-payload.dto';
+import {
+    CreateUserBodyDto,
+    createUserBodySchema,
+} from 'src/applications/user/dto/create-user-body.dto';
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 
-@Controller("user")
+@Controller('user')
 @ApiBearerAuth()
+@UseInterceptors(AuditLogInterceptor)
 export class UserController {
-    constructor(private readonly userFacade: UserFacadeService) { }
+    constructor(
+        private readonly userFacade: UserFacadeService,
+    ) { }
+
+    @Post()
+    @ApiOperation(userDocs.create_user)
+    @TokenGuard(['admin'])
+    @EnsureValid(createUserBodySchema, 'body')
+    async createUser(
+        @CurrentUser() user: UserPayloadDto,
+        @Body() dto: CreateUserBodyDto,
+    ) {
+        return this.userFacade.create({
+            ...dto,
+            actorId: user.id, // ⬅️ penting untuk audit log
+        });
+    }
 
     @Get()
     @ApiOperation(userDocs.get_user)
-    @TokenGuard(["admin"])
-    @EnsureValid(searchUserQuerySchema, "query")
+    @TokenGuard(['admin'])
+    @EnsureValid(searchUserQuerySchema, 'query')
     async findAll(@Query() searchUserQueryDto: SearchUserQueryDto) {
-        const searchUserQuery = searchUserQueryDto as unknown as SearchUserQueryTransformed;
+        const searchUserQuery =
+            searchUserQueryDto as unknown as SearchUserQueryTransformed;
         return await this.userFacade.findAll(searchUserQuery);
     }
 
-    @Patch()
+    @Patch('user/me/password')
+    @TokenGuard(['admin', 'user', 'auditor'])
     @ApiOperation(userDocs.patch_user)
-    @TokenGuard(["admin"])
-    @EnsureValid(safeUpdateBodySchema, "body")
-    async safeUpdate(@User() user: DecodedUser, @Body() safeUpdateBodyDto: SafeUpdateBodyDto) {
-        return await this.userFacade.safeUpdate(user.id, safeUpdateBodyDto);
+    @EnsureValid(safeUpdateBodySchema, 'body')
+    async safeUpdate(
+        @CurrentUser() user: UserPayloadDto,
+        @Body() dto: SafeUpdateBodyDto,
+    ) {
+        return this.userFacade.safeUpdate(user.id, dto, user.id); // actorId = user.id
     }
 
-    @Get("group")
+    @Get('user/group')
     @ApiOperation(userDocs.get_userGroup)
-    @TokenGuard()
+    @TokenGuard(['admin'])
     async retrieveGroup(@User() user: DecodedUser) {
         return await this.userFacade.retrieveGroup(user.id);
     }
 
-    @Get(":id")
+    @Get(':id')
     @ApiOperation(userDocs.get_userId)
-    @TokenGuard(["admin"])
-    async findOne(@Param("id") id: string) {
-        return await this.userFacade.findOne(id);
+    @TokenGuard(['admin'])
+    async findOneUser(@Param('id') id: string): Promise<UserPayloadDto> {
+        return this.userFacade.findOne(id); // ✅ sudah jadi DTO, tidak perlu mapping lagi
     }
 
-    @Patch(":id")
-    @AuditAction("Update User by Admin")
-    @UseInterceptors(AuditLogInterceptor)
-    @ApiOperation(userDocs.patch_userId)
-    @TokenGuard(["admin"])
-    @EnsureValid(updateUserBodySchema, "body")
-    async update(@Param("id") id: string, @Body() updateUserBodyDto: UpdateUserBodyDto) {
-        const updateUserBody = updateUserBodyDto as unknown as UpdateUserBodyTransformed;
-        return await this.userFacade.update(id, updateUserBody);
+    @Patch(':id')
+    @TokenGuard(['admin'])
+    @ApiOperation(userDocs.patch_user)
+    @EnsureValid(updateUserBodySchema, 'body')
+    async update(
+        @Param('id') id: string,
+        @CurrentUser() user: UserPayloadDto,
+        @Body() updateUserBodyDto: UpdateUserBodyDto,
+    ) {
+        const transformed =
+            updateUserBodyDto as unknown as UpdateUserBodyTransformed;
+
+        return this.userFacade.update(id, {
+            ...transformed,
+            actorId: user.id, // ✅ ini sudah valid karena ada di tipe Transformed
+        });
+    }
+
+    @Delete(':id')
+    @TokenGuard(['admin'])
+    @ApiOperation(userDocs.delete_user)
+    async deleteUser(
+        @Param('id') id: string,
+        @CurrentUser() user: UserPayloadDto,
+    ) {
+        await this.userFacade.delete(id, user.id); // ← actorId = user.id
+        return { message: 'User successfully deleted.' };
     }
 }

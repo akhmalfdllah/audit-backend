@@ -54,13 +54,15 @@ export class UserFacadeService {
         return this.updateUserUseCase.execute(id, dto);
     }
 
-    safeUpdate(id: string, dto: SafeUpdateBodyDto) {
-        return this.safeUpdateUserUseCase.execute(id, dto);
+    async safeUpdate(id: string, dto: SafeUpdateBodyDto, actorId: string) {
+        return this.safeUpdateUserUseCase.execute(id, dto, actorId);
     }
 
-    delete(id: string) {
-        return this.deleteUserUseCase.execute(id);
+
+    async delete(id: string, actorId: string): Promise<void> {
+        return this.deleteUserUseCase.execute(id, actorId);
     }
+
 
     verifyUser(dto: VerifyUserBodyDto) {
         return this.verifyUserUseCase.execute(dto);
