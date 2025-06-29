@@ -3,7 +3,7 @@ import { GroupORM } from "src/infrastructure/database/typeorm/entities/group.orm
 
 export abstract class GroupRepository {
   abstract findGroupByMemberId(userId: string): Promise<Group>;
-  abstract findByIdsOrThrow(ids: string[]): Promise<Group[]>;
+  abstract findOneByIdOrThrow(id: string): Promise<Group>;
   abstract create(group: Partial<Group>): Group;
   abstract findOneBy(where: Partial<Group>): Promise<Group | null>;
   abstract findOneByOrFail(where: Partial<Group>): Promise<Group>;

@@ -4,7 +4,6 @@ import { UserModule } from "src/modules/user/user.module";
 import { AuthController } from "src/interfaces/http/auth/auth.controller";
 import { AuthFacadeService } from "src/interfaces/http/auth/auth.facade.service";
 import {
-    SignUpUseCase,
     SignInUseCase,
     RefreshTokenUseCase,
     SignOutUseCase,
@@ -21,7 +20,6 @@ import { TokenService } from "src/shared/services/token.service";
     providers: [ AuthFacadeService,
 
         // Use Cases
-        SignUpUseCase,
         SignInUseCase,
         RefreshTokenUseCase,
         SignOutUseCase,

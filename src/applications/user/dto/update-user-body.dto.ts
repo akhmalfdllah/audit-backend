@@ -42,7 +42,7 @@ export class UpdateUserBodyDto implements Omit<UpdateUserBodySchema, "groupId"> 
   email?: string;
 
   @ApiProperty({ required: false })
-  groupIds?: string[];
+  groupId: string;
 }
 
 export class UpdateUserBodyTransformed {
@@ -51,5 +51,5 @@ export class UpdateUserBodyTransformed {
   status?: UserStatus;
   fullName?: string;
   email?: string;
-  group?: Group | null;
+  groupId: string;
 }

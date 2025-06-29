@@ -12,7 +12,7 @@ export const createUserBodySchema = z
     confirmPassword: z.string().trim().min(1, "Confirm password can't be empty"),
     role: z.nativeEnum(UserRole, { message: "Invalid role!" }).default(UserRole.User),
     status: z.nativeEnum(UserStatus).default(UserStatus.Active),
-    groupIds: z.array(z.string().uuid("Invalid group ID")).min(1, "At least one group must be assigned"),
+    groupId: z.string().uuid("Invalid group ID"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -47,6 +47,6 @@ export class CreateUserBodyDto implements CreateUserBodySchema {
   @ApiProperty({ example: UserStatus.Active })
   status: UserStatus;
 
-  @ApiProperty({ example: ["uuid-group-1", "uuid-group-2"] })
-  groupIds: string[];
+  @ApiProperty({ example: ["uuid-group-1"] })
+  groupId: string;
 }

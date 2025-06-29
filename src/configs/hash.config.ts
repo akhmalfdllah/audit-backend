@@ -1,18 +1,14 @@
-import { Options, argon2id } from "argon2";
-import { ARGON_SECRET_KEY, ARGON_SALT } from "./env.config";
+import { registerAs } from '@nestjs/config';
 
-type ArgonHashOptions = Options & { raw?: boolean };
-type ArgonVerifyOptions = { secret?: Buffer };
+// export default registerAs('hash', () => ({
+//   secretKey: process.env.ARGON_SECRET_KEY,
+//   salt: process.env.ARGON_SALT,
+// }));
 
-export const ArgonHashOptions: ArgonHashOptions = {
-  type: argon2id,
-  memoryCost: 2 ** 16,
-  parallelism: 1,
-  hashLength: 16,
-  secret: Buffer.from(ARGON_SECRET_KEY),
-  salt: Buffer.from(ARGON_SALT),
-};
-
-export const ArgonVerifyOptions: ArgonVerifyOptions = {
-  secret: Buffer.from(ARGON_SECRET_KEY),
-};
+export default registerAs('hash', () => ({
+  secretKey: process.env.ARGON_SECRET_KEY || 'default_key',
+  salt: process.env.ARGON_SALT || 'default_salt',
+  timeCost: parseInt(process.env.ARGON_TIME_COST || '3'),
+  memoryCost: parseInt(process.env.ARGON_MEMORY_COST || '2'),
+  parallelism: parseInt(process.env.ARGON_PARALLELISM || '1'),
+}));

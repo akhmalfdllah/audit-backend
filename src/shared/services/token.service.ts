@@ -1,25 +1,33 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService, JwtSignOptions } from "@nestjs/jwt";
-import {
-  JwtAccessSignOptions,
-  JwtRefreshSignOptions,
-  JwtCommonSignOptions,
-} from "src/configs/jwt.config";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class TokenService {
-  constructor(private readonly jwtService: JwtService) { }
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async signAccessToken<T extends object>(data: T): Promise<string> {
-    return this.jwtService.signAsync(data, JwtAccessSignOptions);
+    return this.jwtService.signAsync(data, {
+      secret: this.configService.get<string>('jwt.secret'),
+      expiresIn: this.configService.get<string>('jwt.expiresIn'),
+    });
   }
 
   async signRefreshToken<T extends object>(data: T): Promise<string> {
-    return this.jwtService.signAsync(data, JwtRefreshSignOptions);
+    return this.jwtService.signAsync(data, {
+      secret: this.configService.get<string>('jwt.refreshSecret'),
+      expiresIn: this.configService.get<string>('jwt.refreshExpiresIn'),
+    });
   }
 
   async signCustomToken<T extends object>(data: T): Promise<string> {
-    return this.jwtService.signAsync(data, JwtCommonSignOptions);
+    return this.jwtService.signAsync(data, {
+      secret: this.configService.get<string>('jwt.secret'), // atau custom config jika ada
+      expiresIn: '10m', // contoh fixed expiry
+    });
   }
 
   async verifyToken<T extends object>(token: string, secret: string): Promise<T> {
@@ -30,7 +38,10 @@ export class TokenService {
     }
   }
 
-  async signToken<T extends object>(payload: T, options: JwtSignOptions) {
+  async signToken<T extends object>(
+    payload: T,
+    options: { secret: string; expiresIn: string },
+  ): Promise<string> {
     return this.jwtService.signAsync(payload, options);
   }
 
@@ -41,5 +52,4 @@ export class TokenService {
     ]);
     return { jwtAccessToken, jwtRefreshToken };
   }
-
 }

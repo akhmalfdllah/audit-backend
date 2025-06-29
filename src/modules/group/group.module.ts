@@ -12,12 +12,12 @@ import {
     CreateGroupUseCase,
     UpdateGroupUseCase,
     DeleteGroupUseCase,
-    FindAllGroupUseCase,
-    FindOneGroupUseCase
+    FindAllGroupsUseCase,
+    FindGroupByIdUseCase
 } from "src/applications/group/use-cases/common.use-case";
 
 // Facade
-import { GroupFacade } from "src/applications/group/group.facade.service";
+import { GroupFacadeService } from "src/interfaces/http/group/group.facade.service";
 
 @Module({
     imports: [TypeOrmModule.forFeature([GroupORM])],
@@ -33,12 +33,12 @@ import { GroupFacade } from "src/applications/group/group.facade.service";
         CreateGroupUseCase,
         UpdateGroupUseCase,
         DeleteGroupUseCase,
-        FindAllGroupUseCase,
-        FindOneGroupUseCase,
+        FindAllGroupsUseCase,
+        FindGroupByIdUseCase,
 
         // Facade
-        GroupFacade,
+        GroupFacadeService,
     ],
-    exports: [GroupFacade],
+    exports: [GroupFacadeService],
 })
 export class GroupModule { }

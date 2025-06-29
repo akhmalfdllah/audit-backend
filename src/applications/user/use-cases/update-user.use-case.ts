@@ -7,6 +7,7 @@ import { UpdateUserBodyDto } from "src/applications/user/dto/update-user-body.dt
 import { UserPayloadDto } from "src/applications/user/dto/user-payload.dto";
 import { AuditLogFacade } from "src/interfaces/http/audit-log/audit-log.facade";
 import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
+import { Group } from "src/core/group/entities/group.entity";
 
 @Injectable()
 export class UpdateUserUseCase {
@@ -21,21 +22,28 @@ export class UpdateUserUseCase {
         const user = await this.userRepository.findOneBy({ id });
         if (!user) throw new NotFoundException("user not found");
 
-        const { password, confirmPassword, groupIds, actorId, ...rest } = dto;
+        const { password, confirmPassword, groupId, actorId, ...rest } = dto;
 
         if (password && password !== confirmPassword) {
             throw new BadRequestException("confirm password not match");
         }
 
+        //        const user = await this.userRepository.findOneByOrFail({ id: userId });
         // Ambil group baru jika diperlukan
-        const groups = groupIds
-            ? await this.groupRepository.findByIdsOrThrow(groupIds)
-            : user.groups;
+        let group: Group;
+
+        if (groupId) {
+            group = await this.groupRepository.findOneByIdOrThrow(groupId);
+        } else if (user.group) {
+            group = user.group;
+        } else {
+            throw new BadRequestException("User must have a group");
+        }
 
         const updated = await this.userRepository.save({
             ...user,
             ...rest,
-            groups,
+            group,
             password: password ? await this.argonService.hashPassword(password) : user.password,
         });
 
@@ -49,12 +57,12 @@ export class UpdateUserUseCase {
                 before: {
                     username: user.username,
                     role: user.role,
-                    groupIds: user.groups.map((g) => g.id),
+                    groupId: user.group ? [user.group.id] : [],
                 },
                 after: {
                     username: updated.username,
                     role: updated.role,
-                    groupIds: updated.groups.map((g) => g.id),
+                    groupId: updated.group ? [updated.group.id] : [],
                 },
             },
         });

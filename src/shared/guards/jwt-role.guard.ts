@@ -1,7 +1,7 @@
 import { Reflector } from "@nestjs/core";
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from "@nestjs/common";
 import type { DecodedUser, JwtRole } from "src/types/jwt.type";
-import { JwtRoleKey } from "src/configs/jwt.config";
+import { JwtRoleKey } from "src/configs/jtw.constant";
 
 @Injectable()
 export class JwtRolesGuard implements CanActivate {

@@ -1,17 +1,26 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import * as argon from "argon2";
-import { ArgonHashOptions, ArgonVerifyOptions } from "src/configs/hash.config";
+// import { ArgonHashOptions, ArgonVerifyOptions } from "src/configs/hash.config";
 @Injectable()
 export class ArgonService {
-    async hashPassword(plainPassword: string): Promise<string> {
-        return await argon.hash(plainPassword, ArgonHashOptions);
-    }
+  constructor(private configService: ConfigService) { }
 
-    async verifyPassword(hashedPassword: string, plainPassword: string): Promise<boolean> {
-        return await argon.verify(hashedPassword, plainPassword, ArgonVerifyOptions);
-      }
+  async hashPassword(plainPassword: string): Promise<string> {
+    return await argon.hash(plainPassword, {
+      type: argon.argon2id,
+      salt: Buffer.from(this.configService.get<string>('hash.salt')),
+      memoryCost: this.configService.get<number>('hash.memoryCost'),
+      timeCost: this.configService.get<number>('hash.timeCost'),
+      parallelism: this.configService.get<number>('hash.parallelism'),
+    });
+  }
 
-    async verifyRefereshToken(hashedRefreshToken: string, refreshToken: string): Promise<boolean> {
-        return await argon.verify(hashedRefreshToken, refreshToken, ArgonVerifyOptions);
-      }
+  async verifyPassword(hashedPassword: string, plainPassword: string): Promise<boolean> {
+    return await argon.verify(hashedPassword, plainPassword);
+  }
+
+  async verifyRefereshToken(hashedRefreshToken: string, refreshToken: string): Promise<boolean> {
+    return await argon.verify(hashedRefreshToken, refreshToken);
+  }
 }

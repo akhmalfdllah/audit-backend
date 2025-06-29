@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 import {
     JwtRefreshCookieName,
     JwtRefreshCookieOptions,
-} from "src/configs/cookie.config";
+} from "src/configs/cookie.constant";
 
 @Injectable()
 export class CookieService {

@@ -19,6 +19,7 @@ export class AuthController {
 
   @Post("signin")
   @ApiOperation(authDocs.post_signin)
+  @HttpCode(HttpStatus.OK)
   @EnsureValid(signInBodySchema)
   async signIn(@Body() dto: SignInBodyDto, @Res() res: Response) {
     const { jwtRefreshToken, ...payload } = await this.authFacadeService.signIn(dto);

@@ -18,7 +18,7 @@ export class CreateUserUseCase {
   ) { }
 
   async execute(dto: CreateUserBodyDto) {
-    const { username, password, confirmPassword, groupIds, actorId, ...rest } = dto;
+    const { username, password, confirmPassword, groupId, actorId, ...rest } = dto;
 
     if (password !== confirmPassword) {
       throw new BadRequestException("confirm password not match!");
@@ -29,8 +29,7 @@ export class CreateUserUseCase {
 
     const hashedPassword = await this.argonService.hashPassword(password);
 
-    // Ambil Group entity berdasarkan ID (kalau relasi banyak-to-banyak)
-    const [group] = await this.groupRepository.findByIdsOrThrow(groupIds);
+    const group = await this.groupRepository.findOneByIdOrThrow(groupId);
 
     const saved = await this.userRepository.save({
       ...rest,

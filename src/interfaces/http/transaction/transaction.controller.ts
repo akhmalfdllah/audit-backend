@@ -11,6 +11,8 @@ import { CreateTransactionZodSchema, CreateTransactionDto } from 'src/applicatio
 import { ApiKeyGuard } from 'src/shared/guards/api-key.guard';
 import { TokenGuard, EnsureValid } from 'src/shared/decorators/common.decorator';
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
+import { ApiKeyUser } from 'src/shared/decorators/api-key-user.decorator';
+import { ErpAuthenticatedUser } from 'src/types/erp-authenticated-user.type';
 import { UserPayloadDto } from 'src/applications/user/dto/user-payload.dto';
 import { ApproveTransactionDto, ApproveTransactionZodSchema } from 'src/applications/transaction/dto/approve-transaction.dto';
 
@@ -32,18 +34,17 @@ export class TransactionController {
     }
 
     // ✅ Untuk sistem ERP
+    @UseGuards(ApiKeyGuard)
     @Post('from-erp')
     @ApiOperation({ summary: 'Create transaction (from ERP system)' })
-    @UseGuards(ApiKeyGuard)
     @EnsureValid(CreateTransactionZodSchema, 'body')
     async createFromERP(
-        //@Req() req: Request,
         @Body() dto: CreateTransactionDto,
+        @ApiKeyUser() user: ErpAuthenticatedUser,
     ) {
-        // ID sistem/ERP ditentukan dari server config atau header custom
-        const erpSystemId = process.env.ERP_SUBMITTER_ID ?? 'SYSTEM_ERP';
-        return this.transactionFacade.create(dto, erpSystemId);
+        return this.transactionFacade.create(dto, user.id); // id user ERP dari DB
     }
+
 
     @Get()
     @TokenGuard(['auditor', 'admin'])
@@ -53,16 +54,16 @@ export class TransactionController {
     }
 
 
-@Put(':id/approval')
-@TokenGuard(['auditor', 'admin'])
-@EnsureValid(ApproveTransactionZodSchema, 'body')
-@ApiOperation({ summary: 'Approve or reject transaction' })
-async approveReject(
-    @Param('id') id: string,
-    @CurrentUser() user: UserPayloadDto,
-    @Body() dto: ApproveTransactionDto,
-) {
-    return this.transactionFacade.approveReject(id, dto.decision, user.id);
-}
+    @Put(':id/approval')
+    @TokenGuard(['auditor', 'admin'])
+    @EnsureValid(ApproveTransactionZodSchema, 'body')
+    @ApiOperation({ summary: 'Approve or reject transaction' })
+    async approveReject(
+        @Param('id') id: string,
+        @CurrentUser() user: UserPayloadDto,
+        @Body() dto: ApproveTransactionDto,
+    ) {
+        return this.transactionFacade.approveReject(id, dto.decision, user.id);
+    }
 
 }

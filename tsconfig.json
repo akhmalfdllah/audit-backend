@@ -9,6 +9,8 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2023",
+    "moduleResolution": "node",
+    "lib": ["ES2023"],
     "sourceMap": true,
     "outDir": "./dist",
     "incremental": true,

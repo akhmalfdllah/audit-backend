@@ -36,6 +36,9 @@ export class UserORM {
     @Column({ nullable: true })
     groupId: string;
 
+    @Column({ nullable: true }) // ✅ Tambahkan ini
+    apiKey: string;
+
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     createdAt: Date;
 

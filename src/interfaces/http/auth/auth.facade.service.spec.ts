@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AuthFacadeService } from "src/interfaces/http/auth/auth.facade.service";
 import {
-    SignUpUseCase,
     SignInUseCase,
     RefreshTokenUseCase,
     SignOutUseCase,
@@ -15,7 +14,7 @@ describe("AuthFacadeService", () => {
             providers: [
                 AuthFacadeService,
                 { provide: SignInUseCase, useValue: { execute: jest.fn() },},
-                { provide: SignUpUseCase, useValue: { execute: jest.fn() },},
+                { provide: SignOutUseCase, useValue: { execute: jest.fn() },},
                 { provide: SignOutUseCase, useValue: { execute: jest.fn() },},
                 { provide: RefreshTokenUseCase, useValue: { execute: jest.fn() },},
             ],

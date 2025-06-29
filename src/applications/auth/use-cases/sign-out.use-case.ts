@@ -24,6 +24,6 @@ export class SignOutUseCase {
             },
         });
 
-        return { message: "signout successfull!" };
+        return { message: "Sign out successful!" };
     }
 }
