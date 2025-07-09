@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import * as argon from "argon2";
+import { UnauthorizedException } from "@nestjs/common/exceptions";
 // import { ArgonHashOptions, ArgonVerifyOptions } from "src/configs/hash.config";
 @Injectable()
 export class ArgonService {
@@ -21,6 +22,9 @@ export class ArgonService {
   }
 
   async verifyRefereshToken(hashedRefreshToken: string, refreshToken: string): Promise<boolean> {
+    if (!hashedRefreshToken || typeof hashedRefreshToken !== 'string') {
+    throw new UnauthorizedException('Refresh token not found!');
+  }
     return await argon.verify(hashedRefreshToken, refreshToken);
   }
 }

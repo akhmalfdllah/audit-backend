@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Transaction } from 'src/core/transaction/entities/transaction.entity';
 import { TransactionRepository } from 'src/core/transaction/repositories/transaction.repository';
 import { CreateTransactionDto } from '../dto/create-transaction.dto';
-import { CreateAuditLogUseCase } from 'src/applications/audit-log/use-cases/create-audit-log.use-case';
+import { AuditLogFacade } from 'src/interfaces/http/audit-log/audit-log.facade';
 import { AuditAction } from 'src/core/audit-log/entities/audit-log.entity';
 import { TransactionStatus } from 'src/core/transaction/entities/transaction.entity';
 
@@ -10,7 +10,7 @@ import { TransactionStatus } from 'src/core/transaction/entities/transaction.ent
 export class CreateTransactionUseCase {
     constructor(
         private readonly transactionRepo: TransactionRepository,
-        private readonly auditLogUseCase: CreateAuditLogUseCase,
+        private readonly auditLogUseCase: AuditLogFacade,
     ) { }
 
     async execute(dto: CreateTransactionDto, actorId: string): Promise<Transaction> {
@@ -29,7 +29,7 @@ export class CreateTransactionUseCase {
 
         const saved = await this.transactionRepo.save(transaction);
 
-        await this.auditLogUseCase.execute({
+        await this.auditLogUseCase.create({
             actorId: actorId, // tetap pencatat log adalah yang kirim
             action: AuditAction.CREATE_TRANSACTION,
             targetEntity: 'Transaction',

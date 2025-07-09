@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateGroupBodyDto } from '../dto/update-group-body.dto';
-import { GroupRepositoryImpl } from 'src/infrastructure/database/repositories/group.repository.impl';
+import { GroupRepository } from 'src/core/group/repositories/group.repository';
 import { GroupORMMapper } from 'src/infrastructure/database/typeorm/mappers/group.mapper';
 
 @Injectable()
 export class UpdateGroupUseCase {
-    constructor(private readonly groupRepo: GroupRepositoryImpl) { }
+    constructor(private readonly groupRepo: GroupRepository) { }
 
     async execute(groupId: string, dto: UpdateGroupBodyDto) {
         const existing = await this.groupRepo.findById(groupId);
@@ -16,6 +16,8 @@ export class UpdateGroupUseCase {
         if (dto.type) existing.type = dto.type;
 
         const updated = await this.groupRepo.update(existing);
-        return GroupORMMapper.toResponse(updated);
+        // ✅ gunakan ini jika hasilnya adalah Group (domain)
+        return GroupORMMapper.toDomainResponse(updated);
+
     }
 }

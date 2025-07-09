@@ -23,9 +23,10 @@ export class User {
         public status: UserStatus,
         public fullName: string, // opsional untuk kebutuhan UI
         public email: string, // opsional
-        public refreshToken: string | null,
         public group: Group,
         public createdAt: Date,
-        public updatedAt: Date
+        public updatedAt: Date,
+        public hashedRefreshToken?: string,
+        public refreshToken?: string
     ) { }
 }

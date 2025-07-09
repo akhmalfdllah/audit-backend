@@ -2,6 +2,7 @@
 
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { PassportModule } from '@nestjs/passport';
 import { GroupORM } from "src/infrastructure/database/typeorm/entities/group.orm-entity";
 import { GroupRepositoryImpl } from "src/infrastructure/database/repositories/group.repository.impl";
 import { GroupRepository } from "src/core/group/repositories/group.repository";
@@ -18,9 +19,13 @@ import {
 
 // Facade
 import { GroupFacadeService } from "src/interfaces/http/group/group.facade.service";
+import { AuditLogModule } from "../audit-log/audit-log.module";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([GroupORM])],
+    imports: [  
+        TypeOrmModule.forFeature([GroupORM]),
+        AuditLogModule, 
+        PassportModule,],
     controllers: [GroupController],
     providers: [
         // Repository binding
@@ -39,6 +44,6 @@ import { GroupFacadeService } from "src/interfaces/http/group/group.facade.servi
         // Facade
         GroupFacadeService,
     ],
-    exports: [GroupFacadeService],
+    exports: [GroupRepository],
 })
 export class GroupModule { }

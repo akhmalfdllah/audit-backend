@@ -14,20 +14,24 @@ export class VerifyUserUseCase {
     ) { }
 
     async execute(dto: VerifyUserBodyDto) {
+        console.log("📥 DTO Masuk:", dto);
         let user;
 
         try {
-            user = await this.userRepository.findOneByOrFail({ username: dto.username });
+            user = await this.userRepository.findOneByOrFail({ email: dto.email });
+            console.log("✅ User ditemukan:", user);
         } catch (error) {
             if (error instanceof EntityNotFoundError) {
-                throw new BadRequestException("invalid username or password!");
+                throw new BadRequestException("invalid email or password!");
             }
             throw error;
         }
-
+        console.log("🔐 Password hash:", user.password);
+        console.log("🔍 Cek validitas password...");
         const isValid = await this.argonService.verifyPassword(user.password, dto.password);
+        console.log("✅ Password valid?", isValid);
         if (!isValid) {
-            throw new BadRequestException("invalid username or password!");
+            throw new BadRequestException("invalid email or password!");
         }
 
         return plainToInstance(UserPayloadDto, user);

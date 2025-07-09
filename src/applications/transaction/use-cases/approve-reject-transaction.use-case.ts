@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { TransactionRepository } from 'src/core/transaction/repositories/transaction.repository';
 import { AuditAction } from 'src/core/audit-log/entities/audit-log.entity';
-import { CreateAuditLogUseCase } from 'src/applications/audit-log/use-cases/create-audit-log.use-case';
+import { AuditLogFacade } from 'src/interfaces/http/audit-log/audit-log.facade';
 import { TransactionStatus } from 'src/core/transaction/entities/transaction.entity';
 
 @Injectable()
 export class ApproveRejectTransactionUseCase {
     constructor(
         private readonly transactionRepo: TransactionRepository,
-        private readonly auditLogUseCase: CreateAuditLogUseCase,
+        private readonly auditLogUseCase: AuditLogFacade,
     ) { }
 
     async execute(
@@ -28,7 +28,7 @@ export class ApproveRejectTransactionUseCase {
 
         const updated = await this.transactionRepo.update(trx);
 
-        await this.auditLogUseCase.execute({
+        await this.auditLogUseCase.create({
             actorId,
             action:
                 decision === 'APPROVED'

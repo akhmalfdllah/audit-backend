@@ -20,8 +20,9 @@ export class GroupRepositoryImpl {
         return this.repo.find();
     }
 
-    async findById(id: string): Promise<GroupORM | null> {
-        return this.repo.findOne({ where: { id } });
+    async findById(id: string): Promise<Group | null> {
+        const orm = await this.repo.findOne({ where: { id } });
+        return orm ? GroupORMMapper.toDomain(orm) : null;
     }
 
     async findOneByIdOrThrow(id: string): Promise<Group> {
@@ -32,9 +33,12 @@ export class GroupRepositoryImpl {
         return GroupORMMapper.toDomain(group);
     }
 
-    async update(group: GroupORM): Promise<GroupORM> {
-        return this.repo.save(group); // bisa dipakai juga untuk update
+    async update(group: Group): Promise<Group> {
+        const orm = GroupORMMapper.toOrm(group);
+        const saved = await this.repo.save(orm);
+        return GroupORMMapper.toDomain(saved);
     }
+
 
     async remove(id: string): Promise<void> {
         await this.repo.delete(id);

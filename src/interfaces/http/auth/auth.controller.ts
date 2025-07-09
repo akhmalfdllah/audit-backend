@@ -8,6 +8,8 @@ import { AuthFacadeService } from "src/interfaces/http/auth/auth.facade.service"
 import { CookieService } from "src/shared/services/cookie.service";
 import { signInBodySchema, SignInBodyDto } from "src/applications/auth/dto/signin-body.dto";
 import { DecodedUser } from "src/types/jwt.type";
+import { createUserBodySchema, CreateUserBodyDto } from "src/applications/user/dto/create-user-body.dto";
+import { CreateUserUseCase } from "src/applications/user/use-cases/create-user.use-case";
 import { AuditLogInterceptor } from "src/shared/interceptors/audit-log.interceptor";
 @Controller("auth")
 //@UseInterceptors(AuditLogInterceptor)
@@ -15,7 +17,15 @@ export class AuthController {
   constructor(
     private readonly authFacadeService: AuthFacadeService,
     private readonly cookieService: CookieService,
+    private readonly createUserUseCase: CreateUserUseCase,
   ) { }
+
+  @Post("signup")
+  @ApiOperation(authDocs.post_signup)
+  @EnsureValid(createUserBodySchema)
+  async signUp(@Body() dto: CreateUserBodyDto) {
+    return this.createUserUseCase.execute(dto);
+  }
 
   @Post("signin")
   @ApiOperation(authDocs.post_signin)

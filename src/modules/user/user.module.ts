@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { PassportModule } from '@nestjs/passport';
 import { UserORM } from "src/infrastructure/database/typeorm/entities/user.orm-entity";
 
 import {
@@ -21,15 +22,25 @@ import { UserFacadeService } from "src/interfaces/http/user/user.facade.service"
 import { UserRepositoryImpl } from "src/infrastructure/database/repositories/user.repository.impl";
 import { UserRepository } from "src/core/user/repositories/user.repository";
 import { UserController } from "src/interfaces/http/user/user.controller";
+import { SharedModule } from "src/shared/shared.module";
+import { GroupModule } from "../group/group.module";
+import { AuditLogModule } from "../audit-log/audit-log.module";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([UserORM])],
+    imports: [
+        TypeOrmModule.forFeature([UserORM]),
+        SharedModule,
+        GroupModule,
+        AuditLogModule,
+        PassportModule
+    ],
     controllers: [UserController],
     providers: [
         {
             provide: UserRepository,
             useClass: UserRepositoryImpl,
         },
+        VerifyUserUseCase,
 
         CreateUserUseCase,
         FindAllUsersUseCase,
@@ -45,6 +56,6 @@ import { UserController } from "src/interfaces/http/user/user.controller";
 
         UserFacadeService,
     ],
-    exports: [UserFacadeService, UserRepository],
+    exports: [UserFacadeService, UserRepository, VerifyUserUseCase, CreateUserUseCase],
 })
 export class UserModule { }

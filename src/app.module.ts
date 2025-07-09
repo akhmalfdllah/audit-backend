@@ -12,7 +12,7 @@ import { TransactionModule } from './modules/transaction/transaction.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import hashConfig from './configs/hash.config';
 import jwtConfig from './configs/jwt.config';
-import cookieConfig from './configs/cookie.config';
+import cookieConfig  from './configs/cookie.config';
 import { zodValidator } from './shared/utils/zod-env-validator';
 import envValidationSchema from './configs/env.validation';
 
@@ -35,7 +35,7 @@ import envValidationSchema from './configs/env.validation';
         username: config.get<string>('database.username'),
         password: config.get<string>('database.password'),
         database: config.get<string>('database.database'),
-        synchronize: false, // ⛔ Hati-hati! Jangan true di produksi
+        synchronize: true, // ⛔ Hati-hati! Jangan true di produksi
         autoLoadEntities: true,
       }),
     }),

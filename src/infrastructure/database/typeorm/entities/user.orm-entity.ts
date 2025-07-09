@@ -39,6 +39,9 @@ export class UserORM {
     @Column({ nullable: true }) // ✅ Tambahkan ini
     apiKey: string;
 
+    @Column({ type: 'text', nullable: true })
+    hashedRefreshToken?: string;
+
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     createdAt: Date;
 

@@ -19,6 +19,7 @@ export class CreateUserUseCase {
 
   async execute(dto: CreateUserBodyDto) {
     const { username, password, confirmPassword, groupId, actorId, ...rest } = dto;
+    console.log('actorId:', actorId);
 
     if (password !== confirmPassword) {
       throw new BadRequestException("confirm password not match!");
@@ -37,7 +38,7 @@ export class CreateUserUseCase {
       password: hashedPassword,
       group,
     });
-
+    
     await this.auditLogFacade.create({
       actorId,
       action: AuditAction.CREATE_USER,

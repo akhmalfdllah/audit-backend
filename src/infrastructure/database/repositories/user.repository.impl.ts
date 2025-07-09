@@ -64,12 +64,9 @@ export class UserRepositoryImpl {
     return UserORMMapper.toDomain(saved);
   }
 
-  async update(id: string, user: Partial<User>): Promise<User> {
-    const ormUser = UserORMMapper.toOrm({ ...user, id } as User);
-    await this.ormRepo.update(id, ormUser);
-    const updated = await this.ormRepo.findOneOrFail({ where: { id }, relations });
-    return UserORMMapper.toDomain(updated);
-  }
+  async update(id: string, data: Partial<UserORM>): Promise<void> {
+    await this.ormRepo.update({ id }, data);
+}
 
   async remove(user: User): Promise<User> {
     const ormUser = await this.ormRepo.findOneOrFail({ where: { id: user.id } });

@@ -13,17 +13,20 @@ import { RefreshTokenStrategy } from "src/shared/strategies/refresh-token.strate
 import { ArgonService } from "src/shared/services/argon.service";
 import { CookieService } from "src/shared/services/cookie.service";
 import { TokenService } from "src/shared/services/token.service";
+import { AuditLogModule } from "../audit-log/audit-log.module";
 
 @Module({
-    imports: [JwtModule.register({ global: true }), UserModule],
+    imports: [
+        JwtModule.register({ global: true }),
+        UserModule, AuditLogModule
+    ],
     controllers: [AuthController],
-    providers: [ AuthFacadeService,
+    providers: [AuthFacadeService,
 
         // Use Cases
         SignInUseCase,
         RefreshTokenUseCase,
         SignOutUseCase,
-
         // Shared Services
         TokenService,
         ArgonService,

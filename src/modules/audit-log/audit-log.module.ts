@@ -8,19 +8,22 @@ import { GetAuditLogsByActionUseCase } from "src/applications/audit-log/use-case
 import { AuditLogRepositoryImpl } from "src/infrastructure/database/repositories/audit-log.repository.impl";
 import { AuditLogRepository } from "src/core/audit-log/repositories/audit-log.repository";
 import { AuditLogMapper } from "src/infrastructure/database/typeorm/mappers/audit-log.mapper";
+import { GetAuditLogsByTargetUseCase } from "src/applications/audit-log/use-cases/get-audit-log-by-target.use-case";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([AuditLogORM])],
+    imports: [TypeOrmModule.forFeature([AuditLogORM]),],
     controllers: [AuditLogController],
     providers: [
-        AuditLogFacade,
-        AuditLogMapper,
-        CreateAuditLogUseCase,
-        GetAuditLogsByActionUseCase,
         {
             provide: AuditLogRepository,
             useClass: AuditLogRepositoryImpl,
         },
+        AuditLogFacade,
+        AuditLogMapper,
+        CreateAuditLogUseCase,
+        GetAuditLogsByActionUseCase,
+        GetAuditLogsByTargetUseCase,
+        AuditLogFacade,
     ],
     exports: [AuditLogFacade],
 })

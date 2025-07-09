@@ -24,6 +24,6 @@ export class CreateGroupUseCase {
       metadata: { name: saved.name, type: saved.type }
     });
 
-    return GroupORMMapper.toResponse(saved);
+    return GroupORMMapper.toDomainResponse(saved); // ✅ BENAR
   }
 }

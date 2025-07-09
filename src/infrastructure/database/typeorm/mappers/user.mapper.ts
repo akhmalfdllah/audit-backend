@@ -14,10 +14,10 @@ export class UserORMMapper {
       orm.status,
       orm.fullName,
       orm.email,
-      orm.refreshToken,
       orm.group ? GroupORMMapper.toDomain(orm.group) : null,
       orm.createdAt,
       orm.updatedAt,
+      orm.hashedRefreshToken,
     );
   }
 
@@ -27,14 +27,12 @@ export class UserORMMapper {
     orm.username = domain.username;
     orm.password = domain.password;
     orm.role = domain.role;
-    orm.refreshToken = domain.refreshToken;
     orm.fullName = domain.fullName;
     orm.email = domain.email;
-    orm.group = domain.group
-      ? GroupORMMapper.toOrm(domain.group)
-      : null;
+    orm.group = domain.group ? GroupORMMapper.toOrm(domain.group): null;
     orm.createdAt = domain.createdAt;
     orm.updatedAt = domain.updatedAt;
+    orm.hashedRefreshToken = domain.hashedRefreshToken;
     return orm;
   }
 }

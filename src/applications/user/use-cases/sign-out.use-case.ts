@@ -24,7 +24,7 @@ export class SignOutUseCase {
       throw new UnauthorizedException("invalid token!");
     }
 
-    await this.userRepository.update(id, { refreshToken: null });
+    await this.userRepository.update(id, { hashedRefreshToken: null });
 
     // ✅ Audit log logout
     await this.auditLogFacade.create({

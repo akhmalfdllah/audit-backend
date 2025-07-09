@@ -21,9 +21,14 @@ export class SignInUseCase {
         // ✅ Verifikasi kredensial
         const user = await this.verifyUserUseCase.execute(signInBodyDto);
 
+        const payload = {
+            id: user.id,
+            username: user.username,
+            role: user.role,
+        };
         // ✅ Buat token baru
-        const jwtAccessToken = await this.tokenService.signAccessToken(user);
-        const jwtRefreshToken = await this.tokenService.signRefreshToken(user);
+        const jwtAccessToken = await this.tokenService.signAccessToken(payload);
+        const jwtRefreshToken = await this.tokenService.signRefreshToken(payload);
 
         // ✅ Simpan refresh token ke DB (hashed, di use-case lain)
         await this.updateRefreshTokenUseCase.execute(user.id, jwtRefreshToken);

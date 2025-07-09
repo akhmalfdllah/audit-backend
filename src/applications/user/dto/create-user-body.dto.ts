@@ -1,4 +1,3 @@
-// src/core/user/dtos/create-user.dto.ts
 import z from "zod";
 import { ApiProperty } from "@nestjs/swagger";
 import { UserRole, UserStatus } from "src/core/user/entities/user.entity";
@@ -23,7 +22,7 @@ type CreateUserBodySchema = z.infer<typeof createUserBodySchema>;
 
 export class CreateUserBodyDto implements CreateUserBodySchema {
 
-  @ApiProperty()
+  @ApiProperty({ example: "system" })
   actorId: string;
 
   @ApiProperty({ example: "admin" })
@@ -47,6 +46,6 @@ export class CreateUserBodyDto implements CreateUserBodySchema {
   @ApiProperty({ example: UserStatus.Active })
   status: UserStatus;
 
-  @ApiProperty({ example: ["uuid-group-1"] })
+  @ApiProperty({ example: "uuid-group-1"})
   groupId: string;
 }

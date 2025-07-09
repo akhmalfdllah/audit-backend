@@ -3,6 +3,7 @@
 import { GroupORM } from "../entities/group.orm-entity";
 import { Group } from "src/core/group/entities/group.entity";
 import { GroupType } from "src/core/group/entities/group.entity";
+import { UserORM } from "../entities/user.orm-entity";
 
 export class GroupORMMapper {
     /**
@@ -43,6 +44,19 @@ export class GroupORMMapper {
         orm.type = domain.type;
         orm.createdAt = domain.createdAt;
         orm.updatedAt = domain.updatedAt;
+
+        orm.members = domain.members.map((member) => {
+            const userOrm = new UserORM();
+            userOrm.id = member.id;
+            userOrm.fullName = member.fullName;
+            userOrm.email = member.email;
+            userOrm.role = member.role;
+            userOrm.status = member.status;
+            userOrm.createdAt = member.createdAt;
+            userOrm.updatedAt = member.updatedAt;
+            userOrm.groupId = orm.id;
+            return userOrm;
+        });
         return orm;
     }
 
@@ -56,14 +70,15 @@ export class GroupORMMapper {
     /**
      * ORM → Plain response (untuk controller output)
      */
-    static toResponse(orm: GroupORM) {
+    static toDomainResponse(domain: Group) {
         return {
-            id: orm.id,
-            name: orm.name,
-            description: orm.description,
-            type: orm.type,
-            createdAt: orm.createdAt,
-            updatedAt: orm.updatedAt,
+            id: domain.id,
+            name: domain.name,
+            description: domain.description,
+            type: domain.type,
+            createdAt: domain.createdAt,
+            updatedAt: domain.updatedAt,
         };
     }
+
 }
