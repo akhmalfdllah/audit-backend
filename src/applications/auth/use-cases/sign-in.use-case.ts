@@ -18,6 +18,7 @@ export class SignInUseCase {
     ) { }
 
     async execute(signInBodyDto: SignInBodyDto) {
+        console.log("🟢 SignInUseCase DIEKSEKUSI");
         // ✅ Verifikasi kredensial
         const user = await this.verifyUserUseCase.execute(signInBodyDto);
 
@@ -26,12 +27,14 @@ export class SignInUseCase {
             username: user.username,
             role: user.role,
         };
-        // ✅ Buat token baru
-        const jwtAccessToken = await this.tokenService.signAccessToken(payload);
-        const jwtRefreshToken = await this.tokenService.signRefreshToken(payload);
-
+        const { jwtAccessToken, jwtRefreshToken } = await this.tokenService.generateTokens(payload);
+        console.log("📦 JWT Tokens:", { jwtAccessToken, jwtRefreshToken });
+        console.log("👤 User:", user);
         // ✅ Simpan refresh token ke DB (hashed, di use-case lain)
+        
+        console.log("🔃 Memanggil updateRefreshTokenUseCase...");
         await this.updateRefreshTokenUseCase.execute(user.id, jwtRefreshToken);
+        console.log("✅ Selesai update hashed refresh token!");
 
         // ✅ Tambahkan audit log login
         await this.auditLogFacade.create({
@@ -44,12 +47,12 @@ export class SignInUseCase {
                 role: user.role,
             },
         });
-
         // ✅ Kembalikan DTO hasil login
-        return plainToInstance(AuthPayloadDto, {
+
+        return {
             accessToken: jwtAccessToken,
             refreshToken: jwtRefreshToken,
             user,
-        });
+        };
     }
 }

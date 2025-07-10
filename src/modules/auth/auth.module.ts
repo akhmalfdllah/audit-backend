@@ -14,6 +14,7 @@ import { ArgonService } from "src/shared/services/argon.service";
 import { CookieService } from "src/shared/services/cookie.service";
 import { TokenService } from "src/shared/services/token.service";
 import { AuditLogModule } from "../audit-log/audit-log.module";
+import { UserFacadeService } from "src/interfaces/http/user/user.facade.service";
 
 @Module({
     imports: [
@@ -35,6 +36,7 @@ import { AuditLogModule } from "../audit-log/audit-log.module";
         // JWT Strategies
         RefreshTokenStrategy,
         AccessTokenStrategy,
+        UserFacadeService,
     ],
     exports: [AuthFacadeService],
 })

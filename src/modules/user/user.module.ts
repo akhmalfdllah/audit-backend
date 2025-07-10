@@ -36,6 +36,7 @@ import { AuditLogModule } from "../audit-log/audit-log.module";
     ],
     controllers: [UserController],
     providers: [
+        UserRepositoryImpl,
         {
             provide: UserRepository,
             useClass: UserRepositoryImpl,
@@ -56,6 +57,20 @@ import { AuditLogModule } from "../audit-log/audit-log.module";
 
         UserFacadeService,
     ],
-    exports: [UserFacadeService, UserRepository, VerifyUserUseCase, CreateUserUseCase],
+    exports: [UserFacadeService,
+        UserRepository,
+        VerifyUserUseCase,
+        CreateUserUseCase,
+        UserRepositoryImpl,
+        FindAllUsersUseCase,
+        FindOneUserUseCase,
+        UpdateUserUseCase,
+        SafeUpdateUserUseCase,
+        RetrieveGroupUseCase,
+        VerifyUserUseCase,
+        VerifyUserWithRefreshTokenUseCase,
+        SignOutUseCase,
+        UpdateRefreshTokenUseCase,
+        DeleteUserUseCase,],
 })
 export class UserModule { }

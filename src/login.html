@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login Test</title>
+</head>
+
+<body>
+    <h2>Login Form</h2>
+    <button onclick="signIn()">Login</button>
+
+    <script>
+        function signIn() {
+            fetch('http://localhost:3000/auth/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include', // ⬅️ WAJIB agar cookie terkirim dan diterima
+                body: JSON.stringify({
+                    email: 'admin@gmail.com',
+                    password: 'admin123',
+                }),
+            })
+                .then((res) => res.json())
+                .then((data) => console.log("✅ Login berhasil:", data))
+        }
+    </script>
+</body>
+
+</html>

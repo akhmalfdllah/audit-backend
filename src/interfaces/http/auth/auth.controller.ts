@@ -28,14 +28,33 @@ export class AuthController {
   }
 
   @Post("signin")
-  @ApiOperation(authDocs.post_signin)
   @HttpCode(HttpStatus.OK)
   @EnsureValid(signInBodySchema)
-  async signIn(@Body() dto: SignInBodyDto, @Res() res: Response) {
-    const { jwtRefreshToken, ...payload } = await this.authFacadeService.signIn(dto);
-    this.cookieService.setCookieRefreshToken(res, jwtRefreshToken);
-    return res.status(200).send(payload);
+  async signIn(
+    @Body() dto: SignInBodyDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authFacadeService.signIn(dto);
+    const { accessToken, refreshToken, user } = result;
+
+    console.log("🎯 Result dari signIn facade:", result);
+    console.log("🔐 Akan set cookie refresh_token:", refreshToken);
+
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: false, // ⬅️ HARUS false untuk localhost
+      sameSite: "strict",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
+    });
+
+    return {
+      accessToken,
+      user,
+    };
   }
+
+
 
 
   @Get("token")
@@ -43,6 +62,7 @@ export class AuthController {
   @RefreshTokenGuard()
   async getNewAccessToken(@Req() req: Request, @User() user: DecodedUser) {
     const refreshToken = this.cookieService.getCookieRefreshToken(req);
+    console.log("🍪 Cookie refresh_token diterima?", refreshToken);
     return await this.authFacadeService.newAccessToken(user.id, refreshToken);
   }
 
@@ -56,4 +76,20 @@ export class AuthController {
     this.cookieService.clearCookieRefreshToken(res);
     return payload;
   }
+
+  @Get("test-cookie")
+  getTestCookie(@Res({ passthrough: true }) res: Response) {
+    const dummyToken = "dummy-cookie-value";
+
+    res.cookie("refresh_token", dummyToken, {
+      httpOnly: true,
+      secure: false, // ✅ HARUS false di localhost
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60 * 1000, // 1 jam
+    });
+
+    return { message: "✅ Cookie test berhasil dikirim", debug: dummyToken };
+  }
+
 }

@@ -4,10 +4,10 @@ import { UserPayloadDto } from "src/applications/user/dto/user-payload.dto";
 
 export class AuthPayloadDto {
     @ApiProperty()
-    jwtAccessToken: string;
+    accessToken: string;
 
     @ApiProperty()
-    jwtRefreshToken: string;
+    refreshToken: string;
 
     @ApiProperty({ type: () => UserPayloadDto })
     user: UserPayloadDto;

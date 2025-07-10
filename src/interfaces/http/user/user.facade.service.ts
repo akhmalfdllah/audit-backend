@@ -76,8 +76,9 @@ export class UserFacadeService {
         return this.signOutUseCase.execute(id, refreshToken);
     }
 
-    updateRefreshToken(user: UserPayloadDto, refreshToken: string) {
-        return this.updateRefreshTokenUseCase.execute(user.id, refreshToken);
+    updateHashedRefreshToken(userId: string, refreshToken: string) {
+        console.log("🟢 Updating refresh token for user:", userId);
+        return this.updateRefreshTokenUseCase.execute(userId, refreshToken);
     }
 
     retrieveGroup(userId: string) {

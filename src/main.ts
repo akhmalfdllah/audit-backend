@@ -16,7 +16,10 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // 🔐 CORS (sesuaikan jika frontend terpisah)
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true, // ⬅️ WAJIB AGAR COOKIE DIKIRIM
+  });
 
   // 📘 Swagger setup
   const config = new DocumentBuilder()

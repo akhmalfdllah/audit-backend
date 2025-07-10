@@ -40,7 +40,7 @@ export class UserORM {
     apiKey: string;
 
     @Column({ type: 'text', nullable: true })
-    hashedRefreshToken?: string;
+    hashedRefreshToken: string;
 
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     createdAt: Date;

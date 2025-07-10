@@ -22,7 +22,7 @@ const seed = async () => {
 
     const admin = userRepo.create({
         username: 'admin',
-        email: 'admin@email.com',
+        email: 'admin@gmail.com',
         fullName: 'Admin Budi',
         password: await hash('admin123'),
         role: UserRole.Admin,          // ✅ pakai enum

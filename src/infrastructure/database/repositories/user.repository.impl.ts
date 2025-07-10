@@ -18,6 +18,15 @@ export class UserRepositoryImpl {
     return ormUser ? UserORMMapper.toDomain(ormUser) : null;
   }
 
+  async updateHashedRefreshToken(userId: string, hashedToken: string): Promise<void> {
+    console.log("➡️ Memperbarui hashedRefreshToken untuk user ID:", userId);
+    await this.ormRepo.update(
+      { id: userId },
+      { hashedRefreshToken: hashedToken }
+    );
+    console.log("✅ hashedRefreshToken berhasil diupdate!");
+  }
+
   // Di implementasi repository (infrastructure layer)
   async search(filter: SearchUserQueryTransformed): Promise<User[]> {
     const where: FindOptionsWhere<User> = {};
@@ -66,7 +75,7 @@ export class UserRepositoryImpl {
 
   async update(id: string, data: Partial<UserORM>): Promise<void> {
     await this.ormRepo.update({ id }, data);
-}
+  }
 
   async remove(user: User): Promise<User> {
     const ormUser = await this.ormRepo.findOneOrFail({ where: { id: user.id } });
