@@ -6,21 +6,22 @@ import {
 import { plainToInstance } from "class-transformer";
 import { UserRepository } from "src/core/user/repositories/user.repository";
 import { ArgonService } from "src/shared/services/argon.service";
-import { SafeUpdateBodyDto } from "src/applications/user/dto/safe-update-body.dto";
+import { UpdateSelfBodyDto } from "src/applications/user/dto/update-self-body.dto";
 import { UserPayloadDto } from "src/applications/user/dto/user-payload.dto";
 import { isNotMatch } from "src/shared/utils/common.util";
 import { AuditLogFacade } from "src/interfaces/http/audit-log/audit-log.facade";
 import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
 
 @Injectable()
-export class SafeUpdateUserUseCase {
+export class UpdateSelfUserUseCase {
     constructor(
         private readonly userRepository: UserRepository,
         private readonly argonService: ArgonService,
         private readonly auditLogFacade: AuditLogFacade,
     ) { }
 
-    async execute(id: string, dto: SafeUpdateBodyDto, actorId: string) {
+    async execute(id: string, dto: UpdateSelfBodyDto, actorId: string) {
+
         if (!id) throw new BadRequestException("User ID is required.");
         const { password, confirmPassword } = dto;
 
@@ -35,27 +36,15 @@ export class SafeUpdateUserUseCase {
             throw new NotFoundException("user not found!");
         }
 
-        const hashedPassword = await this.argonService.hashPassword(password);
-        if (isNotMatch(user.password, hashedPassword)) {
-            throw new BadRequestException(
-                "new password must be different from the old one",
-            );
+        const isSame = await this.argonService.verifyPassword(user.password, password);
+        if (isSame) {
+            throw new BadRequestException("new password must be different from the old one");
         }
 
+        const hashedPassword = await this.argonService.hashPassword(password);
         const saved = await this.userRepository.save({
             ...user,
             password: hashedPassword,
-        });
-
-        // ✅ Audit Log Manual
-        await this.auditLogFacade.create({
-            actorId,
-            action: AuditAction.UPDATE_USER,
-            targetEntity: "User",
-            targetId: user.id,
-            metadata: {
-                maskedChange: true, // tidak tampilkan password
-            },
         });
 
         return plainToInstance(UserPayloadDto, saved, {

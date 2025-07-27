@@ -10,11 +10,11 @@ import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 
 
 @ApiBearerAuth()
-@Controller("group")
+@Controller()
 export class GroupController {
   constructor(private readonly groupFacade: GroupFacadeService) { }
 
-  @Post()
+  @Post("groups")
   @TokenGuard(["admin"])
   @EnsureValid(createGroupBodySchema, "body")
   async create(

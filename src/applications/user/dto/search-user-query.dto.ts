@@ -9,8 +9,8 @@ export const searchUserQuerySchema = z.object({
   role: z.nativeEnum(UserRole).optional(),
   status: z.nativeEnum(UserStatus).optional(),
   groupId: z.string().uuid("Invalid group ID").optional().transform(Find.transformId),
-  page: z.coerce.number().min(1).optional(),
-  limit: z.coerce.number().min(1).max(100).optional(),
+  page: z.string().optional().transform((val) => parseInt(val || '1', 10)),
+  limit: z.string().optional().transform((val) => parseInt(val || '10', 10)),
   keyword: z.string().optional()
 });
 

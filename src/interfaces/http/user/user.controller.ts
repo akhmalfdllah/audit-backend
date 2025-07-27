@@ -18,9 +18,9 @@ import { User } from 'src/shared/decorators/params/user.decorator';
 import { userDocs } from 'src/interfaces/http/user/user.docs';
 import { UserFacadeService } from 'src/interfaces/http/user/user.facade.service';
 import {
-    safeUpdateBodySchema,
-    SafeUpdateBodyDto,
-} from 'src/applications/user/dto/safe-update-body.dto';
+    updateSelfBodySchema,
+    UpdateSelfBodyDto,
+} from 'src/applications/user/dto/update-self-body.dto';
 import {
     updateUserBodySchema,
     UpdateUserBodyTransformed,
@@ -39,6 +39,8 @@ import {
     createUserBodySchema,
 } from 'src/applications/user/dto/create-user-body.dto';
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
+import { AuditAction } from 'src/core/audit-log/entities/audit-log.entity';
+import { AuditActionDecorator } from 'src/shared/decorators/audit-action.decorator';
 
 @Controller('user')
 @ApiBearerAuth()
@@ -72,18 +74,19 @@ export class UserController {
         return await this.userFacade.findAll(searchUserQuery);
     }
 
-    @Patch('user/me/password')
+    @Patch('me')
     @TokenGuard(['admin', 'user', 'auditor'])
+    @AuditActionDecorator(AuditAction.UPDATE_USER)
     @ApiOperation(userDocs.patch_user)
-    @EnsureValid(safeUpdateBodySchema, 'body')
-    async safeUpdate(
+    @EnsureValid(updateSelfBodySchema, 'body')
+    async updateMe(
         @CurrentUser() user: UserPayloadDto,
-        @Body() dto: SafeUpdateBodyDto,
+        @Body() dto: UpdateSelfBodyDto,
     ) {
         return this.userFacade.safeUpdate(user.id, dto, user.id); // actorId = user.id
     }
 
-    @Get('user/group')
+    @Get('/group')
     @ApiOperation(userDocs.get_userGroup)
     @TokenGuard(['admin'])
     async retrieveGroup(@User() user: DecodedUser) {
@@ -99,15 +102,15 @@ export class UserController {
 
     @Patch(':id')
     @TokenGuard(['admin'])
+    @AuditActionDecorator(AuditAction.UPDATE_USER)
     @ApiOperation(userDocs.patch_user)
     @EnsureValid(updateUserBodySchema, 'body')
-    async update(
+    async updateByAdmin(
         @Param('id') id: string,
         @CurrentUser() user: UserPayloadDto,
         @Body() updateUserBodyDto: UpdateUserBodyDto,
     ) {
-        const transformed =
-            updateUserBodyDto as unknown as UpdateUserBodyTransformed;
+        const transformed =updateUserBodyDto as unknown as UpdateUserBodyTransformed;
 
         return this.userFacade.update(id, {
             ...transformed,

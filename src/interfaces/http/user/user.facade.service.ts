@@ -4,7 +4,7 @@ import {
     FindAllUsersUseCase,
     FindOneUserUseCase,
     UpdateUserUseCase,
-    SafeUpdateUserUseCase,
+    UpdateSelfUserUseCase,
     DeleteUserUseCase,
     VerifyUserUseCase,
     VerifyUserWithRefreshTokenUseCase,
@@ -14,8 +14,8 @@ import {
 } from "src/applications/user/use-cases/common.use-case";
 
 import {
-    CreateUserBodyDto,
-    SafeUpdateBodyDto,
+    CreateUserInput,
+    UpdateSelfBodyDto,
     SearchUserQueryTransformed,
     UpdateUserBodyTransformed,
     VerifyUserBodyDto,
@@ -29,7 +29,7 @@ export class UserFacadeService {
         private readonly findAllUsersUseCase: FindAllUsersUseCase,
         private readonly findOneUserUseCase: FindOneUserUseCase,
         private readonly updateUserUseCase: UpdateUserUseCase,
-        private readonly safeUpdateUserUseCase: SafeUpdateUserUseCase,
+        private readonly updateSelfUserUseCase: UpdateSelfUserUseCase,
         private readonly deleteUserUseCase: DeleteUserUseCase,
         private readonly verifyUserUseCase: VerifyUserUseCase,
         private readonly verifyUserWithRefreshTokenUseCase: VerifyUserWithRefreshTokenUseCase,
@@ -38,8 +38,8 @@ export class UserFacadeService {
         private readonly retrieveGroupUseCase: RetrieveGroupUseCase,
     ) { }
 
-    create(dto: CreateUserBodyDto) {
-        return this.createUserUseCase.execute(dto);
+    create(input: CreateUserInput): Promise<UserPayloadDto> {
+        return this.createUserUseCase.execute(input);
     }
 
     findAll(query: SearchUserQueryTransformed) {
@@ -54,15 +54,14 @@ export class UserFacadeService {
         return this.updateUserUseCase.execute(id, dto);
     }
 
-    async safeUpdate(id: string, dto: SafeUpdateBodyDto, actorId: string) {
-        return this.safeUpdateUserUseCase.execute(id, dto, actorId);
+    async safeUpdate(id: string, dto: UpdateSelfBodyDto, actorId: string) {
+        return this.updateSelfUserUseCase.execute(id, dto, actorId);
     }
 
 
     async delete(id: string, actorId: string): Promise<void> {
         return this.deleteUserUseCase.execute(id, actorId);
     }
-
 
     verifyUser(dto: VerifyUserBodyDto) {
         return this.verifyUserUseCase.execute(dto);
@@ -72,13 +71,19 @@ export class UserFacadeService {
         return this.verifyUserWithRefreshTokenUseCase.execute(id, refreshToken);
     }
 
-    signOut(id: string, refreshToken: string) {
-        return this.signOutUseCase.execute(id, refreshToken);
+    async signOut(userId: string, { refreshToken }: { refreshToken: string }) {
+        return this.signOutUseCase.execute(userId, refreshToken);
     }
 
-    updateHashedRefreshToken(userId: string, refreshToken: string) {
-        console.log("🟢 Updating refresh token for user:", userId);
-        return this.updateRefreshTokenUseCase.execute(userId, refreshToken);
+    // Di dalam UserFacadeService
+    async updateHashedRefreshToken(userId: string, { refreshToken }: { refreshToken: string | null }) {
+        if (!refreshToken) {
+            console.warn('⚠️ Refresh token is null or undefined. Skipping update.');
+            return;
+        }
+        console.log('🛠️ Updating hashed refresh token for user:', userId);
+        const result = await this.updateRefreshTokenUseCase.execute(userId, refreshToken);
+        console.log('📦 Update result:', result);
     }
 
     retrieveGroup(userId: string) {

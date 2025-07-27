@@ -15,11 +15,12 @@ import { CookieService } from "src/shared/services/cookie.service";
 import { TokenService } from "src/shared/services/token.service";
 import { AuditLogModule } from "../audit-log/audit-log.module";
 import { UserFacadeService } from "src/interfaces/http/user/user.facade.service";
+import { GroupModule } from "src/modules/group/group.module";
 
 @Module({
     imports: [
         JwtModule.register({ global: true }),
-        UserModule, AuditLogModule
+        UserModule, AuditLogModule, GroupModule,
     ],
     controllers: [AuthController],
     providers: [AuthFacadeService,

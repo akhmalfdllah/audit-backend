@@ -1,6 +1,6 @@
 // src/applications/group/group.module.ts
 
-import { Module } from "@nestjs/common";
+import { Module, forwardRef} from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { PassportModule } from '@nestjs/passport';
 import { GroupORM } from "src/infrastructure/database/typeorm/entities/group.orm-entity";
@@ -20,12 +20,15 @@ import {
 // Facade
 import { GroupFacadeService } from "src/interfaces/http/group/group.facade.service";
 import { AuditLogModule } from "../audit-log/audit-log.module";
+import { UserModule } from "src/modules/user/user.module";
+import { RetrieveGroupUseCase } from "src/applications/user/use-cases/retrieve-group.use-case";
 
 @Module({
     imports: [  
         TypeOrmModule.forFeature([GroupORM]),
         AuditLogModule, 
-        PassportModule,],
+        PassportModule,
+        forwardRef(() => UserModule),],
     controllers: [GroupController],
     providers: [
         // Repository binding
@@ -40,10 +43,11 @@ import { AuditLogModule } from "../audit-log/audit-log.module";
         DeleteGroupUseCase,
         FindAllGroupsUseCase,
         FindGroupByIdUseCase,
+        RetrieveGroupUseCase,
 
         // Facade
         GroupFacadeService,
     ],
-    exports: [GroupRepository],
+    exports: [GroupRepository, RetrieveGroupUseCase],
 })
 export class GroupModule { }

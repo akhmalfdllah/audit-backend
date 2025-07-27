@@ -33,7 +33,7 @@ export class SignInUseCase {
         // ✅ Simpan refresh token ke DB (hashed, di use-case lain)
         
         console.log("🔃 Memanggil updateRefreshTokenUseCase...");
-        await this.updateRefreshTokenUseCase.execute(user.id, jwtRefreshToken);
+        await this.updateRefreshTokenUseCase.execute(user.id, { refreshToken: jwtRefreshToken });
         console.log("✅ Selesai update hashed refresh token!");
 
         // ✅ Tambahkan audit log login

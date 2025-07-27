@@ -9,15 +9,19 @@ export class UpdateRefreshTokenUseCase {
         private readonly argonService: ArgonService
     ) { }
 
-    async execute(userId: string, refreshToken: string) {
-        await this.userRepository.findOneByOrFail({ id: userId }).catch(() => {
-            throw new NotFoundException("user not found!");
+    async execute(userId: string, refreshToken: string | null) {
+        const user = await this.userRepository.findOneByOrFail({ id: userId }).catch(() => {
+            throw new NotFoundException("User not found!");
         });
-
-        const hashed = await this.argonService.hashPassword(refreshToken); // ✅
-
-        await this.userRepository.update(userId, { hashedRefreshToken: hashed }); // ✅
-        const updatedUser = await this.userRepository.findOneByOrFail({ id: userId });
-        return plainToInstance(UserPayloadDto, updatedUser, { excludeExtraneousValues: true });
+        if (!refreshToken) {
+            // Clear stored hash
+            user.hashedRefreshToken = null;
+        } else {
+            const hashed = await this.argonService.hashPassword(refreshToken);
+            user.hashedRefreshToken = hashed;
+        }
+        const result = await this.userRepository.save(user);
+        console.log("✅ UpdateRefreshTokenUseCase saved:", result.hashedRefreshToken);
+        return plainToInstance(UserPayloadDto, result, { excludeExtraneousValues: true });
     }
 }

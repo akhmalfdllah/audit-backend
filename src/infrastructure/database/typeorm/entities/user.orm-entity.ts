@@ -23,24 +23,24 @@ export class UserORM {
     @Column({ nullable: true })
     fullName: string | null;
 
-    @Column({ nullable: true })
+    @Column({ type: 'enum', enum: UserStatus, default: UserStatus.Active })
     status: UserStatus;
 
-    @Column({ nullable: true })
-    refreshToken: string | null;
+    // @Column({ name: 'refresh_token', nullable: true })
+    // refreshToken?: string;
 
-    @ManyToOne(() => GroupORM, (group) => group.members, { nullable: true })
+    @ManyToOne(() => GroupORM, (group) => group.members, { onDelete: "SET NULL", nullable: true })
     @JoinColumn({ name: "groupId" })
     group: GroupORM;
 
     @Column({ nullable: true })
     groupId: string;
 
-    @Column({ nullable: true }) // ✅ Tambahkan ini
-    apiKey: string;
+    @Column({ nullable: true })
+    apiKey: string | null;
 
-    @Column({ type: 'text', nullable: true })
-    hashedRefreshToken: string;
+    @Column({ type: "text", nullable: true })
+    hashedRefreshToken: string | null;
 
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     createdAt: Date;

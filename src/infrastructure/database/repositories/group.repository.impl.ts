@@ -40,7 +40,7 @@ export class GroupRepositoryImpl {
     }
 
 
-    async remove(id: string): Promise<void> {
-        await this.repo.delete(id);
+    async remove({ id }: { id: string }): Promise<void>{
+        await this.repo.delete({id});
     }
 }

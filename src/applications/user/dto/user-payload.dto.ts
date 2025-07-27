@@ -28,7 +28,7 @@ export class UserPayloadDto {
   @Expose()
   role: UserRole;
 
-  @ApiProperty({ enum: UserStatus })
+  @ApiProperty({ example: UserStatus.Active })
   @Expose()
   status: UserStatus;
 

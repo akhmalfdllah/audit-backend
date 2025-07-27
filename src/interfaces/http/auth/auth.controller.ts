@@ -20,12 +20,12 @@ export class AuthController {
     private readonly createUserUseCase: CreateUserUseCase,
   ) { }
 
-  @Post("signup")
-  @ApiOperation(authDocs.post_signup)
-  @EnsureValid(createUserBodySchema)
-  async signUp(@Body() dto: CreateUserBodyDto) {
-    return this.createUserUseCase.execute(dto);
-  }
+  // @Post("signup")
+  // @ApiOperation(authDocs.post_signup)
+  // @EnsureValid(createUserBodySchema)
+  // async signUp(@Body() dto: CreateUserBodyDto) {
+  //   return this.createUserUseCase.execute(dto);
+  // }
 
   @Post("signin")
   @HttpCode(HttpStatus.OK)
@@ -54,9 +54,6 @@ export class AuthController {
     };
   }
 
-
-
-
   @Get("token")
   @ApiOperation(authDocs.get_token)
   @RefreshTokenGuard()
@@ -74,22 +71,22 @@ export class AuthController {
     const refreshToken = this.cookieService.getCookieRefreshToken(req);
     const payload = await this.authFacadeService.signOut(user.id, refreshToken);
     this.cookieService.clearCookieRefreshToken(res);
-    return payload;
+    res.status(HttpStatus.OK).json(payload); // ✅ INI WAJIB
   }
-
-  @Get("test-cookie")
-  getTestCookie(@Res({ passthrough: true }) res: Response) {
-    const dummyToken = "dummy-cookie-value";
-
-    res.cookie("refresh_token", dummyToken, {
-      httpOnly: true,
-      secure: false, // ✅ HARUS false di localhost
-      sameSite: "strict",
-      path: "/",
-      maxAge: 60 * 60 * 1000, // 1 jam
-    });
-
-    return { message: "✅ Cookie test berhasil dikirim", debug: dummyToken };
-  }
-
 }
+
+  // @Get("test-cookie")
+  // getTestCookie(@Res({ passthrough: true }) res: Response) {
+  //   const dummyToken = "dummy-cookie-value";
+
+  //   res.cookie("refresh_token", dummyToken, {
+  //     httpOnly: true,
+  //     secure: false, // ✅ HARUS false di localhost
+  //     sameSite: "strict",
+  //     path: "/",
+  //     maxAge: 60 * 60 * 1000, // 1 jam
+  //   });
+
+  //   return { message: "✅ Cookie test berhasil dikirim", debug: dummyToken };
+  // }
+

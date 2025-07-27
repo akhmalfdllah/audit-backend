@@ -22,16 +22,13 @@ type CreateUserBodySchema = z.infer<typeof createUserBodySchema>;
 
 export class CreateUserBodyDto implements CreateUserBodySchema {
 
-  @ApiProperty({ example: "system" })
-  actorId: string;
-
   @ApiProperty({ example: "admin" })
   username: string;
 
   @ApiProperty({ example: "Admin Budi" })
   fullName: string;
 
-  @ApiProperty({ example: "admin@email.com" })
+  @ApiProperty({ example: "admin@gmail.com" })
   email: string;
 
   @ApiProperty({ example: "admin123" })
@@ -40,12 +37,15 @@ export class CreateUserBodyDto implements CreateUserBodySchema {
   @ApiProperty({ example: "admin123" })
   confirmPassword: string;
 
-  @ApiProperty({ example: UserRole.User })
+  @ApiProperty({ example: UserRole.Admin })
   role: UserRole;
 
   @ApiProperty({ example: UserStatus.Active })
   status: UserStatus;
 
-  @ApiProperty({ example: "uuid-group-1"})
+  @ApiProperty()
   groupId: string;
 }
+export type CreateUserInput = CreateUserBodyDto & {
+  actorId?: string; // dipakai di audit log
+};

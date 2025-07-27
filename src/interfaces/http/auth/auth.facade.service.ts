@@ -24,7 +24,7 @@ export class AuthFacadeService {
     }
 
     async newAccessToken(userId: string, refreshToken: string) {
-        return this.refreshTokenUseCase.execute(userId, refreshToken);
+        return this.refreshTokenUseCase.execute(userId, { refreshToken });
     }
 
     async signOut(userId: string, refreshToken: string) {

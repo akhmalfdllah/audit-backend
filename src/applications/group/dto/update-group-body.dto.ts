@@ -6,6 +6,9 @@ export const updateGroupBodySchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
   type: z.nativeEnum(GroupType).optional(),
+})
+.refine((data) => Object.keys(data).length > 0, {
+  message: "Minimal satu field harus diisi",
 });
 
 export class UpdateGroupBodyDto implements z.infer<typeof updateGroupBodySchema> {

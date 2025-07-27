@@ -1,13 +1,13 @@
 import z from "zod";
 import { ApiProperty, OmitType } from "@nestjs/swagger";
-import { Group } from "src/core/group/entities/group.entity";
 import { Prop } from "src/shared/utils/common.util";
 import { UserRole, UserStatus } from "src/core/user/entities/user.entity";
 
 export const updateUserBodySchema = z.object({
+  fullName: z.string().min(1).optional(),
+  username: z.string().min(1).optional(),
   role: z.nativeEnum(UserRole, { message: "Invalid role" }).optional(),
   status: z.nativeEnum(UserStatus).optional(),
-  fullName: z.string().min(1).optional(),
   email: z.string().email().optional(),
   groupId: z.string().uuid().nullable().optional().transform(Prop.transFormNullableId),
   password: z.string().min(1).optional(),
@@ -17,8 +17,6 @@ export const updateUserBodySchema = z.object({
 type UpdateUserBodySchema = z.infer<typeof updateUserBodySchema>;
 
 export class UpdateUserBodyDto implements Omit<UpdateUserBodySchema, "groupId"> {
-  @ApiProperty()
-  actorId: string;
 
   @ApiProperty({ required: false })
   username?: string;
@@ -42,7 +40,7 @@ export class UpdateUserBodyDto implements Omit<UpdateUserBodySchema, "groupId"> 
   email?: string;
 
   @ApiProperty({ required: false })
-  groupId: string;
+  groupId?: string;
 }
 
 export class UpdateUserBodyTransformed {
@@ -52,4 +50,6 @@ export class UpdateUserBodyTransformed {
   fullName?: string;
   email?: string;
   groupId: string;
+  password?: string;
+  confirmPassword?: string;
 }

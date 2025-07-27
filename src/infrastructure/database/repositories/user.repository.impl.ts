@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, FindOptionsRelations, FindManyOptions, FindOptionsWhere, ILike } from "typeorm";
 import { UserORM } from "src/infrastructure/database/typeorm/entities/user.orm-entity";
@@ -29,22 +29,65 @@ export class UserRepositoryImpl {
 
   // Di implementasi repository (infrastructure layer)
   async search(filter: SearchUserQueryTransformed): Promise<User[]> {
-    const where: FindOptionsWhere<User> = {};
+  const where: FindOptionsWhere<User>[] = [];
 
-    if (filter.keyword) {
-      where.username = ILike(`%${filter.keyword}%`);
-    }
-
-    if (filter.role) where.role = filter.role;
-    if (filter.group) where.group = { id: filter.group.id };
-
-    return this.ormRepo.find({
-      where,
-      relations: ['groups'],
-      take: filter.limit,
-      skip: (filter.page - 1) * filter.limit,
-    });
+  // Jika ada keyword, cocokkan ke username, email, dan fullName (OR condition)
+  if (filter.keyword) {
+    const keywordLike = ILike(`%${filter.keyword}%`);
+    where.push(
+      { username: keywordLike },
+      { email: keywordLike },
+      { fullName: keywordLike }
+    );
   }
+
+  // Jika ada filter lain (role/status/group), kita tambahkan ke setiap kondisi where
+  const roleCondition = filter.role ? { role: filter.role } : {};
+  const statusCondition = filter.status ? { status: filter.status } : {};
+  const groupCondition = filter.group?.id ? { group: { id: filter.group.id } } : {};
+
+  // Gabungkan semua kondisi
+  const finalWhere = where.length
+    ? where.map(condition => ({
+        ...condition,
+        ...roleCondition,
+        ...statusCondition,
+        ...groupCondition,
+      }))
+    : [
+        {
+          ...roleCondition,
+          ...statusCondition,
+          ...groupCondition,
+        },
+      ];
+
+  // Validasi: minimal satu filter harus diisi
+  if (
+    !filter.keyword &&
+    !filter.role &&
+    !filter.status &&
+    !filter.group?.id
+  ) {
+    throw new BadRequestException('Minimal satu filter harus diisi');
+  }
+
+  // Validasi pagination
+  const limit = Number(filter.limit) || 10;
+  const page = Number(filter.page) || 1;
+  if (isNaN(limit) || isNaN(page)) {
+    throw new BadRequestException('Parameter page dan limit harus berupa angka');
+  }
+
+  return this.ormRepo.find({
+    where: finalWhere,
+    relations: ['group'],
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+}
+
+
   async findByApiKey(apiKey: string): Promise<User | null> {
     const result = await this.ormRepo.findOne(
       {
@@ -62,8 +105,16 @@ export class UserRepositoryImpl {
     return UserORMMapper.toDomain(ormUser);
   }
 
+  async findAllByGroupId(groupId: string): Promise<User[]> {
+  return this.ormRepo.find({ where: { group: { id: groupId } } });
+}
+
   async find(options: FindManyOptions<User>): Promise<User[]> {
-    const ormUsers = await this.ormRepo.find({ ...options, relations });
+    const ormUsers = await this.ormRepo.find({ 
+      ...options,
+      select: ['id', 'username', 'hashedRefreshToken'], // ✅ sesuai dengan ORM
+      relations,
+    });
     return ormUsers.map(UserORMMapper.toDomain);
   }
 
