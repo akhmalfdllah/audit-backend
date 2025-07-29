@@ -20,8 +20,8 @@ export class GroupFacadeService {
         private readonly updateGroupUseCase: UpdateGroupUseCase
     ) { }
 
-    async save(dto: CreateGroupBodyDto, actor: { id: string }) {
-        return this.createGroupUseCase.execute(dto, actor);
+    async save(dto: CreateGroupBodyDto){
+        return this.createGroupUseCase.execute(dto);
     }
 
     async update(id: string, payload: UpdateGroupBodyDto) {

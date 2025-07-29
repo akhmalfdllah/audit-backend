@@ -11,10 +11,9 @@ import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
 export class DeleteUserUseCase {
     constructor(
         private readonly userRepository: UserRepository,
-        private readonly auditLogFacade: AuditLogFacade,
     ) { }
 
-    async execute(id: string, actorId: string): Promise<void> {
+    async execute(id: string): Promise<void> {
         let user;
         try {
             user = await this.userRepository.findOneByOrFail({ id });
@@ -24,19 +23,6 @@ export class DeleteUserUseCase {
 
         try {
             await this.userRepository.remove(user);
-
-            // ✅ Catat Audit Log
-            await this.auditLogFacade.create({
-                actorId,
-                action: AuditAction.DELETE_USER,
-                targetEntity: "User",
-                targetId: id,
-                metadata: {
-                    username: user.username,
-                    role: user.role,
-                    groupIds: user.groups?.map((g) => g.id) ?? [],
-                },
-            });
         } catch {
             throw new ConflictException(
                 "unable to delete this record due to existing references in related tables.",

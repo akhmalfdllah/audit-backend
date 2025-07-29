@@ -10,6 +10,6 @@ export class GetAllTransactionsUseCase {
         console.log('[GetAllTransactionsUseCase] execute() dipanggil');
         const result = await this.transactionRepo.findAll();
         console.log('[FindAllTransactionsUseCase] Jumlah transaksi:', result.length);
-        return this.transactionRepo.findAll();
+        return result;
     }
 }

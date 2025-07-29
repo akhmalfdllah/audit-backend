@@ -11,8 +11,10 @@ import { DecodedUser } from "src/types/jwt.type";
 import { createUserBodySchema, CreateUserBodyDto } from "src/applications/user/dto/create-user-body.dto";
 import { CreateUserUseCase } from "src/applications/user/use-cases/create-user.use-case";
 import { AuditLogInterceptor } from "src/shared/interceptors/audit-log.interceptor";
+import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
+import { AuditActionDecorator } from "src/shared/decorators/audit-action.decorator";
 @Controller("auth")
-//@UseInterceptors(AuditLogInterceptor)
+@UseInterceptors(AuditLogInterceptor)
 export class AuthController {
   constructor(
     private readonly authFacadeService: AuthFacadeService,
@@ -30,6 +32,7 @@ export class AuthController {
   @Post("signin")
   @HttpCode(HttpStatus.OK)
   @EnsureValid(signInBodySchema)
+  @AuditActionDecorator(AuditAction.SIGNIN)
   async signIn(
     @Body() dto: SignInBodyDto,
     @Res({ passthrough: true }) res: Response,

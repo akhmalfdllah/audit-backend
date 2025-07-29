@@ -15,8 +15,8 @@ import { ErpAuthenticatedUser } from 'src/types/erp-authenticated-user.type';
 import { UserPayloadDto } from 'src/applications/user/dto/user-payload.dto';
 import { ApproveTransactionDto, ApproveTransactionZodSchema } from 'src/applications/transaction/dto/approve-transaction.dto';
 import { AuditLogInterceptor } from 'src/shared/interceptors/audit-log.interceptor';
-import { AuditActionDecorator } from 'src/shared/decorators/audit-action.decorator';
 import { AuditAction } from 'src/core/audit-log/entities/audit-log.entity';
+import { AuditActionDecorator } from 'src/shared/decorators/audit-action.decorator';
 
 @Controller('transactions')
 @ApiBearerAuth()
@@ -53,7 +53,6 @@ export class TransactionController {
     ) {
         return this.transactionFacade.create(dto, user.id); // id user ERP dari DB
     }
-
 
     @Put(':id/approval')
     @TokenGuard(['auditor', 'admin'])

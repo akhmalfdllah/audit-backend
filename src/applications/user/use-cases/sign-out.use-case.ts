@@ -26,15 +26,6 @@ export class SignOutUseCase {
 
     await this.userRepository.update(id, { hashedRefreshToken: null });
 
-    // ✅ Audit log logout
-    await this.auditLogFacade.create({
-      actorId: id,
-      action: AuditAction.SIGNOUT,
-      targetEntity: "User",
-      targetId: id,
-      metadata: { message: "User signed out" },
-    });
-
     const updatedUser = await this.userRepository.findOneByOrFail({ id });
     return plainToInstance(UserPayloadDto, updatedUser, {
       excludeExtraneousValues: true,

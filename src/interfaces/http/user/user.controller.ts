@@ -74,7 +74,7 @@ export class UserController {
         @CurrentUser() user: UserPayloadDto,
         @Body() dto: UpdateSelfBodyDto,
     ) {
-        return this.userFacade.safeUpdate(user.id, dto, user.id); // actorId = user.id
+        return this.userFacade.safeUpdate(user.id, dto); // actorId = user.id
     }
 
     @Get('/group')
@@ -116,7 +116,7 @@ export class UserController {
         @Param('id') id: string,
         @CurrentUser() user: UserPayloadDto,
     ) {
-        await this.userFacade.delete(id, user.id); // ← actorId = user.id
+        await this.userFacade.delete(id); // ← actorId = user.id
         return { message: 'User successfully deleted.' };
     }
 }

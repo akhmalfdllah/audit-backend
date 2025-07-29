@@ -9,18 +9,15 @@ import { ArgonService } from "src/shared/services/argon.service";
 import { UpdateSelfBodyDto } from "src/applications/user/dto/update-self-body.dto";
 import { UserPayloadDto } from "src/applications/user/dto/user-payload.dto";
 import { isNotMatch } from "src/shared/utils/common.util";
-import { AuditLogFacade } from "src/interfaces/http/audit-log/audit-log.facade";
-import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
 
 @Injectable()
 export class UpdateSelfUserUseCase {
     constructor(
         private readonly userRepository: UserRepository,
         private readonly argonService: ArgonService,
-        private readonly auditLogFacade: AuditLogFacade,
     ) { }
 
-    async execute(id: string, dto: UpdateSelfBodyDto, actorId: string) {
+    async execute(id: string, dto: UpdateSelfBodyDto) {
 
         if (!id) throw new BadRequestException("User ID is required.");
         const { password, confirmPassword } = dto;

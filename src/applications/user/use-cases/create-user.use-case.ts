@@ -38,18 +38,6 @@ export class CreateUserUseCase {
       password: hashedPassword,
       group,
     });
-    
-    await this.auditLogFacade.create({
-      actorId,
-      action: AuditAction.CREATE_USER,
-      targetEntity: 'User',
-      targetId: saved.id,
-      metadata: {
-        username: saved.username,
-        role: saved.role,
-        groupIds: saved.group ? [saved.group.id] : [], // ✅ array dari 1 ID
-      },
-    });
 
     return plainToInstance(UserPayloadDto, saved);
   }

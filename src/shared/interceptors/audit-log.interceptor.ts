@@ -22,50 +22,66 @@ export class AuditLogInterceptor implements NestInterceptor {
         const req: Request = context.switchToHttp().getRequest();
         const user = req.user as { id: string } | undefined;
 
+        const method = req.method;
+        const url = req.originalUrl;
+
+        let action: AuditAction | undefined = this.reflector.get<AuditAction>(
+            AUDIT_ACTION_KEY,
+            context.getHandler(),
+        );
+
+        // 🧠 Tambahan log bantu debug
+        console.log('[AuditLogInterceptor] method:', method);
+        console.log('[AuditLogInterceptor] url:', url);
+
+        // Deteksi otomatis untuk transaksi
+        if (!action && method === 'POST' && url.includes('/transactions/from-erp')) {
+            action = AuditAction.CREATE_TRANSACTION;
+        }
+
+        if (!action && method === 'POST' && url.includes('/transactions')) {
+            action = AuditAction.CREATE_TRANSACTION;
+        }
+
+        if (!action && method === 'PUT' && url.includes('/transactions')) {
+            const decision = req.body?.decision;
+            if (decision === 'APPROVED') {
+                action = AuditAction.APPROVE_TRANSACTION;
+            } else if (decision === 'REJECTED') {
+                action = AuditAction.REJECT_TRANSACTION;
+            }
+        }
+
+        const targetEntity = url.split('/')[1] ?? 'unknown';
+        const targetId = req.params['id'] ?? req.body?.id ?? 'unknown';
+
         return next.handle().pipe(
             tap(async () => {
-                if (!user?.id) return;
-
-                const url = req.baseUrl.replace('/', ''); // Misalnya: "transactions"
-                const targetId = req.params['id'] ?? req.body?.id ?? 'unknown';
-
-                // Ambil metadata @AuditAction(...) jika ada
-                let action = this.reflector.get<AuditAction>(
-                    AUDIT_ACTION_KEY,
-                    context.getHandler(),
-                );
-
-                // ⬇️ Kalau belum ada, cek body.decision untuk put /approval
-                if (!action) {
-                    const isApprovalEndpoint =
-                        req.method === 'PUT' &&
-                        /\/[^\/]+\/approval$/.test(req.originalUrl); // cocokkan format :id/approval
-
-                    if (isApprovalEndpoint) {
-                        const decision = req.body?.decision;
-                        if (decision === 'APPROVED') {
-                            action = AuditAction.APPROVE_TRANSACTION;
-                        } else if (decision === 'REJECTED') {
-                            action = AuditAction.REJECT_TRANSACTION;
-                        }
-                    }
+                if (!user?.id || !action) {
+                    console.log('[AuditLogInterceptor] ❌ Audit log tidak dicatat karena actorId/action tidak tersedia');
+                    return;
                 }
 
-                // Lanjut buat audit log kalau action terdeteksi
-                if (action) {
-                    await this.auditLogFacade.create({
-                        actorId: user.id,
-                        action,
-                        targetEntity: url,
-                        targetId,
-                        metadata: {
-                            body: req.body,
-                            query: req.query,
-                            params: req.params,
-                        },
-                    });
-                }
+                console.log('[AuditLogInterceptor] ✅ Mencatat audit log:', {
+                    actorId: user.id,
+                    action,
+                    targetEntity,
+                    targetId,
+                });
+
+                await this.auditLogFacade.create({
+                    actorId: user.id,
+                    action,
+                    targetEntity,
+                    targetId,
+                    metadata: {
+                        body: req.body,
+                        query: req.query,
+                        params: req.params,
+                    },
+                });
             }),
         );
     }
+
 }

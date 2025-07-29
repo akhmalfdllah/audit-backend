@@ -21,12 +21,13 @@ export class GroupController {
   @Post("groups")
   @TokenGuard(["admin"])
   @EnsureValid(createGroupBodySchema, "body")
+  @AuditActionDecorator(AuditAction.CREATE_GROUP) // ⬅️ Audit otomatis
   async create(
     @Body() dto: CreateGroupBodyDto,
-    @CurrentUser() user: UserPayloadDto,
   ) {
-    return this.groupFacade.save(dto, user);
+    return this.groupFacade.save(dto); // ⬅️ cukup 1 argumen
   }
+
 
   @Get()
   @ApiOperation(groupDocs.get_all_group)
@@ -35,7 +36,7 @@ export class GroupController {
     return this.groupFacade.findAll();
   }
 
-  
+
   @Patch(':id')
   @TokenGuard(['admin'])
   @AuditActionDecorator(AuditAction.UPDATE_GROUP)

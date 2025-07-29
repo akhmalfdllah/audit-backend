@@ -36,19 +36,6 @@ export class SignInUseCase {
         await this.updateRefreshTokenUseCase.execute(user.id, { refreshToken: jwtRefreshToken });
         console.log("✅ Selesai update hashed refresh token!");
 
-        // ✅ Tambahkan audit log login
-        await this.auditLogFacade.create({
-            actorId: user.id,
-            action: AuditAction.SIGNIN,
-            targetEntity: "User",
-            targetId: user.id,
-            metadata: {
-                username: user.username,
-                role: user.role,
-            },
-        });
-        // ✅ Kembalikan DTO hasil login
-
         return {
             accessToken: jwtAccessToken,
             refreshToken: jwtRefreshToken,
