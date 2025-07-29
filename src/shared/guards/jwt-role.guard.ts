@@ -24,10 +24,13 @@ export class JwtRolesGuard implements CanActivate {
       throw new ForbiddenException("user not authenticated!");
     }
 
-    const hasRole = requiredRoles.includes(user.role as any);
+    const hasRole = requiredRoles.some(role => role === user.role);
     if (!hasRole) {
       throw new ForbiddenException(`required role(s): ${requiredRoles.join(", ")}`);
     }
+console.log('[JwtRolesGuard] Required:', requiredRoles);
+console.log('[JwtRolesGuard] User role:', user.role);
+console.log('[JwtRolesGuard] Role match:', requiredRoles.includes(user.role as JwtRole));
 
     return true;
   }

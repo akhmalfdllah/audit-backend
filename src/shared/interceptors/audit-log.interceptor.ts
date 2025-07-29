@@ -22,21 +22,42 @@ export class AuditLogInterceptor implements NestInterceptor {
         const req: Request = context.switchToHttp().getRequest();
         const user = req.user as { id: string } | undefined;
 
-        // Ambil metadata @AuditAction(...) kalau ada
-        const action = this.reflector.get<AuditAction>(
-            AUDIT_ACTION_KEY,
-            context.getHandler(),
-        );
-
         return next.handle().pipe(
             tap(async () => {
-                // Catat audit log HANYA jika ada user login dan ada action valid
-                if (user?.id && action) {
+                if (!user?.id) return;
+
+                const url = req.baseUrl.replace('/', ''); // Misalnya: "transactions"
+                const targetId = req.params['id'] ?? req.body?.id ?? 'unknown';
+
+                // Ambil metadata @AuditAction(...) jika ada
+                let action = this.reflector.get<AuditAction>(
+                    AUDIT_ACTION_KEY,
+                    context.getHandler(),
+                );
+
+                // ⬇️ Kalau belum ada, cek body.decision untuk put /approval
+                if (!action) {
+                    const isApprovalEndpoint =
+                        req.method === 'PUT' &&
+                        /\/[^\/]+\/approval$/.test(req.originalUrl); // cocokkan format :id/approval
+
+                    if (isApprovalEndpoint) {
+                        const decision = req.body?.decision;
+                        if (decision === 'APPROVED') {
+                            action = AuditAction.APPROVE_TRANSACTION;
+                        } else if (decision === 'REJECTED') {
+                            action = AuditAction.REJECT_TRANSACTION;
+                        }
+                    }
+                }
+
+                // Lanjut buat audit log kalau action terdeteksi
+                if (action) {
                     await this.auditLogFacade.create({
                         actorId: user.id,
-                        action: action,
-                        targetEntity: req.baseUrl.replace('/', ''),
-                        targetId: req.params['id'] ?? req.body?.id ?? 'unknown',
+                        action,
+                        targetEntity: url,
+                        targetId,
                         metadata: {
                             body: req.body,
                             query: req.query,

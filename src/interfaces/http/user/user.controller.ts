@@ -1,13 +1,4 @@
-import {
-    Controller,
-    Get,
-    Body,
-    Patch,
-    Param,
-    Query,
-    UseInterceptors,
-    Post,
-    Delete,
+import { Controller, Get, Body, Patch, Param, Query, UseInterceptors, Post, Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import {

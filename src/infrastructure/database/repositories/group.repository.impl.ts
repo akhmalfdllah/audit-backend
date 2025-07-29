@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { validate as isUUID } from 'uuid';
 import { Repository } from "typeorm";
 import { Group } from "src/core/group/entities/group.entity";
 import { GroupORM } from "src/infrastructure/database/typeorm/entities/group.orm-entity";
@@ -21,6 +22,10 @@ export class GroupRepositoryImpl {
     }
 
     async findById(id: string): Promise<Group | null> {
+        if (!isUUID(id)){ 
+            console.trace(`[GroupRepo] ❌ findById() dipanggil dengan ID bukan UUID: ${id}`);
+            return null;}
+            console.log(`[GroupRepo] Mencari Group dengan ID: ${id}`);
         const orm = await this.repo.findOne({ where: { id } });
         return orm ? GroupORMMapper.toDomain(orm) : null;
     }
@@ -40,7 +45,7 @@ export class GroupRepositoryImpl {
     }
 
 
-    async remove({ id }: { id: string }): Promise<void>{
-        await this.repo.delete({id});
+    async remove({ id }: { id: string }): Promise<void> {
+        await this.repo.delete({ id });
     }
 }

@@ -7,6 +7,9 @@ export class GetAllTransactionsUseCase {
     constructor(private readonly transactionRepo: TransactionRepository) { }
 
     async execute(): Promise<Transaction[]> {
+        console.log('[GetAllTransactionsUseCase] execute() dipanggil');
+        const result = await this.transactionRepo.findAll();
+        console.log('[FindAllTransactionsUseCase] Jumlah transaksi:', result.length);
         return this.transactionRepo.findAll();
     }
 }

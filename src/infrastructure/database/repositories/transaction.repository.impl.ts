@@ -27,6 +27,7 @@ export class TransactionRepositoryImpl extends AbstractTransactionRepo {
 
     async findAll(): Promise<Transaction[]> {
         const all = await this.repo.find();
+        console.log('[TransactionRepositoryImpl] Jumlah data ditemukan di DB:', all.length);
         return all.map((t) => TransactionMapper.toDomain(t));
     }
 

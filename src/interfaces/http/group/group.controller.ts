@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, ParseUUIDPipe } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { TokenGuard, EnsureValid } from "src/shared/decorators/common.decorator";
 import { groupDocs } from "src/interfaces/http/group/group.docs";
@@ -7,10 +7,14 @@ import { createGroupBodySchema, CreateGroupBodyDto } from "src/applications/grou
 import { updateGroupBodySchema, UpdateGroupBodyDto } from "src/applications/group/dto/update-group-body.dto";
 import { UserPayloadDto } from "src/applications/user/dto/user-payload.dto";
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
-
+import { AuditLogInterceptor } from "src/shared/interceptors/audit-log.interceptor";
+import { AuditActionDecorator } from "src/shared/decorators/audit-action.decorator";
+import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
+import { sanitize } from "src/shared/utils/sanitize";
 
 @ApiBearerAuth()
 @Controller()
+@UseInterceptors(AuditLogInterceptor)
 export class GroupController {
   constructor(private readonly groupFacade: GroupFacadeService) { }
 
@@ -31,28 +35,31 @@ export class GroupController {
     return this.groupFacade.findAll();
   }
 
-  @Get(":id")
+  
+  @Patch(':id')
+  @TokenGuard(['admin'])
+  @AuditActionDecorator(AuditAction.UPDATE_GROUP)
   @ApiOperation(groupDocs.get_groupId)
-  @TokenGuard(["admin"])
-  findOne(@Param("id") id: string) {
-    return this.groupFacade.findOne(id);
-  }
-
-  @Patch(":id")
-  @TokenGuard(["admin"])
-  @EnsureValid(updateGroupBodySchema, "body")
-  @ApiOperation(groupDocs.get_groupId)
-  async update(
-    @Param("id") id: string,
-    @Body() dto: UpdateGroupBodyDto
+  @EnsureValid(updateGroupBodySchema, 'body')
+  async updateGroup(
+    @Param('id') groupId: string,
+    @Body() dto: UpdateGroupBodyDto,
   ) {
-    return this.groupFacade.update(id, dto);
+    const sanitizedDto = sanitize(dto);
+    return this.groupFacade.update(groupId, sanitizedDto);
   }
 
   @Delete(":id")
-  @ApiOperation(groupDocs.delete_groupId)
   @TokenGuard(["admin"])
-  remove(@Param("id") id: string) {
+  @ApiOperation(groupDocs.delete_groupId)
+  @AuditActionDecorator(AuditAction.DELETE_GROUP)
+  async remove(@Param("id") id: string) {
     return this.groupFacade.remove(id);
+  }
+  @Get(":id")
+  @ApiOperation(groupDocs.get_groupId)
+  @TokenGuard(["admin"])
+  async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.groupFacade.findOne(id);
   }
 }

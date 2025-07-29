@@ -11,13 +11,15 @@ export class UpdateGroupUseCase {
         const existing = await this.groupRepo.findById(groupId);
         if (!existing) throw new NotFoundException('Group not found');
 
+        //const { name, description, type } = dto;
+
         if (dto.name) existing.name = dto.name;
         if (dto.description) existing.description = dto.description;
         if (dto.type) existing.type = dto.type;
 
-        const updated = await this.groupRepo.update(existing);
-        // ✅ gunakan ini jika hasilnya adalah Group (domain)
-        return GroupORMMapper.toDomainResponse(updated);
 
+        const updated = await this.groupRepo.update(existing);
+
+        return GroupORMMapper.toDomainResponse(updated);
     }
 }

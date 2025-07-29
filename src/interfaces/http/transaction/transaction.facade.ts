@@ -19,8 +19,10 @@ export class TransactionFacade {
     }
 
     async findAll() {
+        console.log('[TransactionFacade] findAll dipanggil');
         return this.getAllTransactionsUseCase.execute();
     }
+    
     async approveReject(id: string, decision: TransactionStatus.APPROVED | TransactionStatus.REJECTED, actorId: string) {
         return this.approveRejectTransactionUseCase.execute(id, decision, actorId);
     }

@@ -8,8 +8,8 @@ export const updateUserBodySchema = z.object({
   username: z.string().min(1).optional(),
   role: z.nativeEnum(UserRole, { message: "Invalid role" }).optional(),
   status: z.nativeEnum(UserStatus).optional(),
-  email: z.string().email().optional(),
-  groupId: z.string().uuid().nullable().optional().transform(Prop.transFormNullableId),
+  email: z.string().optional(),
+  groupId: z.string().uuid().optional(),
   password: z.string().min(1).optional(),
   confirmPassword: z.string().min(1).optional(),
 });
@@ -18,29 +18,29 @@ type UpdateUserBodySchema = z.infer<typeof updateUserBodySchema>;
 
 export class UpdateUserBodyDto implements Omit<UpdateUserBodySchema, "groupId"> {
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, example: undefined })
   username?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, example: undefined })
   password?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, example: undefined })
   confirmPassword?: string;
 
-  @ApiProperty({ enum: UserRole, required: false })
+  @ApiProperty({ enum: UserRole, required: false, example: undefined })
   role?: UserRole;
 
-  @ApiProperty({ enum: UserStatus, required: false })
+  @ApiProperty({ enum: UserStatus, required: false, example: undefined })
   status?: UserStatus;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, example: undefined })
   fullName?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, example: undefined })
   email?: string;
 
-  @ApiProperty({ required: false })
-  groupId?: string;
+  @ApiProperty({ required: false, example: undefined })
+  groupId?: string | null;
 }
 
 export class UpdateUserBodyTransformed {
@@ -49,7 +49,7 @@ export class UpdateUserBodyTransformed {
   status?: UserStatus;
   fullName?: string;
   email?: string;
-  groupId: string;
+  groupId?: string | { id: string } | null;
   password?: string;
   confirmPassword?: string;
 }

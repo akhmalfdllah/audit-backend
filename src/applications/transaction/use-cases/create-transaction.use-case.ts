@@ -29,18 +29,6 @@ export class CreateTransactionUseCase {
 
         const saved = await this.transactionRepo.save(transaction);
 
-        await this.auditLogUseCase.create({
-            actorId: actorId, // tetap pencatat log adalah yang kirim
-            action: AuditAction.CREATE_TRANSACTION,
-            targetEntity: 'Transaction',
-            targetId: saved.id,
-            metadata: {
-                title: transaction.title,
-                amount: transaction.amount,
-                category: transaction.category,
-            },
-        });
-
         return saved;
     }
 }

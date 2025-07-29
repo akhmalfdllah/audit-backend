@@ -5,12 +5,14 @@ import { ClassSerializerInterceptor } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { AuditLogInterceptor } from './shared/interceptors/audit-log.interceptor';
+import { AuditLogFacade } from './interfaces/http/audit-log/audit-log.facade';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // ⛑️ Global Interceptor untuk handle serialization (misal @Exclude di entity)
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)), new AuditLogInterceptor(app.get(AuditLogFacade), app.get(Reflector)),);
 
   // 🍪 Untuk parsing cookie (dibutuhkan kalau pakai refresh token via cookie)
   app.use(cookieParser());

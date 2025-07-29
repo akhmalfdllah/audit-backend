@@ -2,10 +2,9 @@ import {
     Body,
     Controller,
     Post,
-    Req,
-    UseGuards, Get, Put, Param
+    UseGuards, Get, Put, Param, UseInterceptors
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TransactionFacade } from './transaction.facade';
 import { CreateTransactionZodSchema, CreateTransactionDto } from 'src/applications/transaction/dto/create-transaction.dto';
 import { ApiKeyGuard } from 'src/shared/guards/api-key.guard';
@@ -15,9 +14,13 @@ import { ApiKeyUser } from 'src/shared/decorators/api-key-user.decorator';
 import { ErpAuthenticatedUser } from 'src/types/erp-authenticated-user.type';
 import { UserPayloadDto } from 'src/applications/user/dto/user-payload.dto';
 import { ApproveTransactionDto, ApproveTransactionZodSchema } from 'src/applications/transaction/dto/approve-transaction.dto';
+import { AuditLogInterceptor } from 'src/shared/interceptors/audit-log.interceptor';
+import { AuditActionDecorator } from 'src/shared/decorators/audit-action.decorator';
+import { AuditAction } from 'src/core/audit-log/entities/audit-log.entity';
 
-@ApiTags('Transactions')
 @Controller('transactions')
+@ApiBearerAuth()
+@UseInterceptors(AuditLogInterceptor)
 export class TransactionController {
     constructor(private readonly transactionFacade: TransactionFacade) { }
 
@@ -32,7 +35,13 @@ export class TransactionController {
     ) {
         return this.transactionFacade.create(dto, user.id);
     }
-
+    @Get('all')
+    @TokenGuard(['auditor', 'admin'])
+    @ApiOperation({ summary: 'Get all transactions' })
+    async findAll() {
+        console.log('[TransactionController] findAll dijalankan (tanpa @CurrentUser)');
+        return this.transactionFacade.findAll();
+    }
     // ✅ Untuk sistem ERP
     @UseGuards(ApiKeyGuard)
     @Post('from-erp')
@@ -43,14 +52,6 @@ export class TransactionController {
         @ApiKeyUser() user: ErpAuthenticatedUser,
     ) {
         return this.transactionFacade.create(dto, user.id); // id user ERP dari DB
-    }
-
-
-    @Get()
-    @TokenGuard(['auditor', 'admin'])
-    @ApiOperation({ summary: 'Get all transactions' })
-    async findAll() {
-        return this.transactionFacade.findAll();
     }
 
 
@@ -65,5 +66,4 @@ export class TransactionController {
     ) {
         return this.transactionFacade.approveReject(id, dto.decision, user.id);
     }
-
 }

@@ -87,7 +87,6 @@ export class UserRepositoryImpl {
   });
 }
 
-
   async findByApiKey(apiKey: string): Promise<User | null> {
     const result = await this.ormRepo.findOne(
       {

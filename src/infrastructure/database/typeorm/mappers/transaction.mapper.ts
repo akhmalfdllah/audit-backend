@@ -19,7 +19,9 @@ export class TransactionMapper {
   }
   static toORM(trx: Transaction): TransactionORM {
     const orm = new TransactionORM();
-    orm.id = trx.id;
+    if (trx.id) {
+      orm.id = trx.id;
+    }
     orm.title = trx.title;
     orm.amount = trx.amount;
     orm.category = trx.category;
@@ -27,8 +29,8 @@ export class TransactionMapper {
     orm.status = trx.status;
     orm.submittedBy = trx.submittedBy;
     orm.approvedBy = trx.approvedBy;
-    orm.createdAt = trx.createdAt;
-    orm.updatedAt = trx.updatedAt;
+    // orm.createdAt = trx.createdAt;
+    // orm.updatedAt = trx.updatedAt;
     return orm;
   }
 }

@@ -10,6 +10,7 @@ import { TableName } from 'src/configs/database.config';
 
 @Entity({ name: TableName.Transaction })
 export class TransactionORM {
+    
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
