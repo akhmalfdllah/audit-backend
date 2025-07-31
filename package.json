@@ -9,6 +9,7 @@
     "build": "nest build",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
+    "simulate-erp": "node scripts/simulate-erp-send.js",
     "start:prod": "node dist/main",
     "seed:admin": "ts-node src/scripts/seed-admin.ts",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
