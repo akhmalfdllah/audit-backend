@@ -4,7 +4,8 @@ const faker = require('faker');
 
 const apiUrl = process.env.ERP_API_URL;
 const apiKey = process.env.ERP_API_KEY;
-const interval = parseInt(process.env.ERP_INTERVAL_MS) || 3600000; // default 1 jam
+const interval = parseInt(process.env.ERP_INTERVAL_MS) || 3600000;
+ // default 1 jam
 
 const sendFakeTransaction = async () => {
     const trx = {
