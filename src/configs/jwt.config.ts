@@ -13,10 +13,10 @@ import { registerAs } from '@nestjs/config';
 // } from "src/configs/env.config";
 
 export default registerAs('jwt', () => ({
-  secret: process.env.JWT_SECRET || 'default_secret',
-  expiresIn: process.env.JWT_EXPIRES_IN || '15m',
-  refreshSecret: process.env.JWT_REFRESH_SECRET || 'default_refresh',
-  refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+  secret: process.env.JWT_SECRET,
+  expiresIn: process.env.JWT_EXPIRES_IN,
+  refreshSecret: process.env.JWT_REFRESH_SECRET,
+  refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
 }));
 
 
