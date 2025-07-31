@@ -57,7 +57,7 @@ export class GroupController {
   async remove(@Param("id") id: string) {
     return this.groupFacade.remove(id);
   }
-  @Get(":id")
+  @Get("groups/:id")
   @ApiOperation(groupDocs.get_groupId)
   @TokenGuard(["Admin"])
   async findOne(@Param('id', new ParseUUIDPipe()) id: string) {

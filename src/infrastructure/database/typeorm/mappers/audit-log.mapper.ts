@@ -10,7 +10,7 @@ export class AuditLogMapper {
             orm.action,
             orm.targetEntity,
             orm.targetId,
-            orm.metadata ?? null,
+            orm.metadata,
             orm.createdAt,
         );
     }

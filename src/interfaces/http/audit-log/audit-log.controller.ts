@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, Get, Param, Query } from "@nestjs/common";
 import { ApiBearerAuth } from "@nestjs/swagger";
 import { AuditLogFacade } from "./audit-log.facade";
 import { GetAuditLogsByTargetDto, GetAuditLogsByTargetZodSchema } from "src/applications/audit-log/dto/get-audit-logs-by-target.dto";
@@ -10,6 +10,15 @@ import { TokenGuard } from "src/shared/decorators/token-guard.decorator";
 @ApiBearerAuth()
 export class AuditLogController {
     constructor(private readonly auditLogFacade: AuditLogFacade) { }
+
+    @Get()
+    @TokenGuard(["Admin", "Auditor"])
+    async getAllLogs(@Query('page') page = '1') {
+        const limit = 10;
+        const pageNum = parseInt(page, 10);
+        const offset = (pageNum - 1) * limit;
+        return await this.auditLogFacade.findPaginated(offset, limit);
+    }
 
     @Get("by-action/:action")
     @TokenGuard(["Admin", "Auditor"])

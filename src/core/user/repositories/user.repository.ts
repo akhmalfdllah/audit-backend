@@ -10,4 +10,7 @@ export abstract class UserRepository {
      abstract remove(user: User): Promise<User>;
      abstract update(id: string, user: Partial<User>): Promise<User>;
      abstract search(filter: SearchUserQueryTransformed): Promise<User[]>;
+     abstract countActiveUsers(): Promise<number>
+     abstract countInactiveUsers(): Promise<number>;
+
 }

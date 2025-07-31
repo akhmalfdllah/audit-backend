@@ -15,6 +15,7 @@ import jwtConfig from './configs/jwt.config';
 import cookieConfig  from './configs/cookie.config';
 import { zodValidator } from './shared/utils/zod-env-validator';
 import envValidationSchema from './configs/env.validation';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import envValidationSchema from './configs/env.validation';
     GroupModule,
     TransactionModule,
     AuditLogModule,
+    DashboardModule,
   ],
 })
 export class AppModule { }

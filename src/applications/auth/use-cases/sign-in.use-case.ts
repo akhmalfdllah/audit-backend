@@ -26,6 +26,7 @@ export class SignInUseCase {
             id: user.id,
             username: user.username,
             role: user.role,
+            fullName: user.fullName,
         };
         const { jwtAccessToken, jwtRefreshToken } = await this.tokenService.generateTokens(payload);
         console.log("📦 JWT Tokens:", { jwtAccessToken, jwtRefreshToken });

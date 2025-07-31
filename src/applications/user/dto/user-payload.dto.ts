@@ -22,6 +22,10 @@ export class UserPayloadDto {
 
   @ApiProperty()
   @Expose()
+  fullName: string;
+
+  @ApiProperty()
+  @Expose()
   username: string;
 
   @ApiProperty({ enum: UserRole })

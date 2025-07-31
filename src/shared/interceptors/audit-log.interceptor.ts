@@ -20,7 +20,7 @@ export class AuditLogInterceptor implements NestInterceptor {
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         const req: Request = context.switchToHttp().getRequest();
-        const user = req.user as { id: string } | undefined;
+        const user = req.user as { id: string; fullName?: string } | undefined;
 
         const method = req.method;
         const url = req.originalUrl;
@@ -30,11 +30,11 @@ export class AuditLogInterceptor implements NestInterceptor {
             context.getHandler(),
         );
 
-        // 🧠 Tambahan log bantu debug
+        // 🧠 Debug logs
         console.log('[AuditLogInterceptor] method:', method);
         console.log('[AuditLogInterceptor] url:', url);
 
-        // Deteksi otomatis untuk transaksi
+        // Auto detect action for transaction
         if (!action && method === 'POST' && url.includes('/transactions/from-erp')) {
             action = AuditAction.CREATE_TRANSACTION;
         }
@@ -53,13 +53,35 @@ export class AuditLogInterceptor implements NestInterceptor {
         }
 
         const targetEntity = url.split('/')[1] ?? 'unknown';
-        const targetId = req.params['id'] ?? req.body?.id ?? 'unknown';
 
         return next.handle().pipe(
-            tap(async () => {
+            tap(async (response) => {
                 if (!user?.id || !action) {
                     console.log('[AuditLogInterceptor] ❌ Audit log tidak dicatat karena actorId/action tidak tersedia');
                     return;
+                }
+
+                // Ambil targetId dari response jika belum ada di req
+                const targetId =
+                    req.params['id'] ??
+                    req.body?.id ??
+                    (response?.id || response?.data?.id) ?? // kadang response dibungkus .data
+                    'unknown';
+
+                const metadata: Record<string, any> = {
+                    actorId: user.id,
+                    actorName: user.fullName ?? undefined,
+                    body: req.body,
+                    query: req.query,
+                    params: req.params,
+                };
+
+                if (targetEntity === 'transactions') {
+                    if (req.body?.title) metadata.title = req.body.title;
+                    if (req.body?.amount) metadata.amount = req.body.amount;
+                    if (action === AuditAction.APPROVE_TRANSACTION || action === AuditAction.REJECT_TRANSACTION) {
+                        metadata.decisionBy = user.fullName ?? user.id;
+                    }
                 }
 
                 console.log('[AuditLogInterceptor] ✅ Mencatat audit log:', {
@@ -71,17 +93,13 @@ export class AuditLogInterceptor implements NestInterceptor {
 
                 await this.auditLogFacade.create({
                     actorId: user.id,
+                    actorName: user.fullName ?? undefined,
                     action,
                     targetEntity,
                     targetId,
-                    metadata: {
-                        body: req.body,
-                        query: req.query,
-                        params: req.params,
-                    },
+                    metadata,
                 });
             }),
         );
     }
-
 }

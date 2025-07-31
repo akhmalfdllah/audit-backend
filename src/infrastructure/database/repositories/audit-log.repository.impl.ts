@@ -20,6 +20,16 @@ export class AuditLogRepositoryImpl implements AbstractAuditLogRepo {
         return AuditLogMapper.toDomain(saved);
     }
 
+    async findPaginated(offset: number, limit: number): Promise<AuditLog[]> {
+        const found = await this.repo.find({
+            skip: offset,
+            take: limit,
+            order: { createdAt: 'DESC' },
+        });
+
+        return found.map((orm) => AuditLogMapper.toDomain(orm));
+    }
+
     async findByAction(action: AuditAction): Promise<AuditLog[]> {
         const found = await this.repo.find({ where: { action } });
         return found.map((orm) => AuditLogMapper.toDomain(orm));

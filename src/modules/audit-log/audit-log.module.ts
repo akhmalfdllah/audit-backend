@@ -9,11 +9,13 @@ import { AuditLogRepositoryImpl } from "src/infrastructure/database/repositories
 import { AuditLogRepository } from "src/core/audit-log/repositories/audit-log.repository";
 import { AuditLogMapper } from "src/infrastructure/database/typeorm/mappers/audit-log.mapper";
 import { GetAuditLogsByTargetUseCase } from "src/applications/audit-log/use-cases/get-audit-log-by-target.use-case";
+import { GetPaginatedAuditLogsUseCase } from "src/applications/audit-log/use-cases/get-paginated-audit-logs.usecase";
 
 @Module({
     imports: [TypeOrmModule.forFeature([AuditLogORM]),],
     controllers: [AuditLogController],
     providers: [
+        GetPaginatedAuditLogsUseCase,
         {
             provide: AuditLogRepository,
             useClass: AuditLogRepositoryImpl,

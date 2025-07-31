@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TransactionRepository as AbstractTransactionRepo } from 'src/core/transaction/repositories/transaction.repository';
-import { Transaction } from 'src/core/transaction/entities/transaction.entity';
+import { Transaction, TransactionStatus } from 'src/core/transaction/entities/transaction.entity';
 import { TransactionORM } from 'src/infrastructure/database/typeorm/entities/transaction.orm-entity';
 import { TransactionMapper } from 'src/infrastructure/database/typeorm/mappers/transaction.mapper';
 
@@ -13,6 +13,14 @@ export class TransactionRepositoryImpl extends AbstractTransactionRepo {
         private readonly repo: Repository<TransactionORM>,
     ) {
         super();
+    }
+
+    async countAll(): Promise<number> {
+        return this.repo.count()
+    }
+
+    async countByStatus(status: TransactionStatus): Promise<number> {
+        return this.repo.count({ where: { status } })
     }
 
     async save(transaction: Transaction): Promise<Transaction> {

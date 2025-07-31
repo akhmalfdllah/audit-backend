@@ -9,12 +9,16 @@ export const CreateAuditLogZodSchema = z.object({
     targetEntity: z.string().min(1, { message: 'targetEntity is required' }),
     targetId: z.string().min(1, { message: 'targetId is required' }),
     metadata: z.record(z.any()).optional(),
+    actorName: z.string().optional(),
 });
 
 // DTO class for NestJS/Swagger
 export class CreateAuditLogDto {
     @ApiProperty()
     actorId: string;
+
+    @ApiProperty()
+    actorName: string | null;
 
     @ApiProperty({ enum: AuditAction })
     action: AuditAction;
@@ -27,4 +31,7 @@ export class CreateAuditLogDto {
 
     @ApiProperty()
     metadata?: Record<string, any>;
+
+    @ApiProperty()
+    createdAt?: Date;
 }

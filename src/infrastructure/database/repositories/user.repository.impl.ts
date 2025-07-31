@@ -18,6 +18,14 @@ export class UserRepositoryImpl {
     return ormUser ? UserORMMapper.toDomain(ormUser) : null;
   }
 
+  async countActiveUsers(): Promise<number> {
+    return this.ormRepo.count({ where: { status: UserStatus.Active } })
+  }
+
+  async countInactiveUsers(): Promise<number> {
+  return await this.ormRepo.count({where: { status: UserStatus.Inactive },
+  });
+}
   async updateHashedRefreshToken(userId: string, hashedToken: string): Promise<void> {
     console.log("➡️ Memperbarui hashedRefreshToken untuk user ID:", userId);
     await this.ormRepo.update(
