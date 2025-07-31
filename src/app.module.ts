@@ -21,7 +21,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     // 🔧 Register all config globally
     ConfigModule.forRoot({
       isGlobal: true,
-      ignoreEnvFile: false,
+      ignoreEnvFile: true,
       load: [databaseConfig, jwtConfig, cookieConfig, hashConfig],
       validate: zodValidator(envValidationSchema),
     }),
