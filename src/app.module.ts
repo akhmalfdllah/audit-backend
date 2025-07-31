@@ -2,9 +2,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import databaseConfig from './configs/database.config';
-
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { GroupModule } from './modules/group/group.module';
@@ -12,7 +11,7 @@ import { TransactionModule } from './modules/transaction/transaction.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import hashConfig from './configs/hash.config';
 import jwtConfig from './configs/jwt.config';
-import cookieConfig  from './configs/cookie.config';
+import cookieConfig from './configs/cookie.config';
 import { zodValidator } from './shared/utils/zod-env-validator';
 import envValidationSchema from './configs/env.validation';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
@@ -22,6 +21,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     // 🔧 Register all config globally
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env.production', 
       load: [databaseConfig, jwtConfig, cookieConfig, hashConfig],
       validate: zodValidator(envValidationSchema),
     }),
@@ -29,17 +29,14 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     // 🛢️ Dynamic database config
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
+      useFactory: (config: ConfigService): TypeOrmModuleOptions => ({
         type: 'postgres',
-        host: config.get<string>('database.host'),
-        port: config.get<number>('database.port'),
-        username: config.get<string>('database.username'),
-        password: config.get<string>('database.password'),
-        database: config.get<string>('database.database'),
-        synchronize: true, // ⛔ Hati-hati! Jangan true di produksi
+        url: config.get<string>('database.url'),
+        synchronize: false, // ⛔ ubah jadi false di production
         autoLoadEntities: true,
       }),
     }),
+
 
     // 🧩 Feature modules
     AuthModule,
@@ -47,7 +44,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     GroupModule,
     TransactionModule,
     AuditLogModule,
-    DashboardModule,
+    DashboardModule
   ],
 })
 export class AppModule { }
