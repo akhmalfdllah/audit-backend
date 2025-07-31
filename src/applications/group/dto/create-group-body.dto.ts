@@ -17,6 +17,6 @@ export class CreateGroupBodyDto {
   @ApiProperty({ example: 'Admin wilayah Jakarta' })
   description: string;
 
-  @ApiProperty({ enum: GroupType, example: GroupType.INTERNAL })
+  @ApiProperty({ enum: GroupType, example: GroupType.Internal })
   type: GroupType;
 }

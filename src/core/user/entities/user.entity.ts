@@ -2,16 +2,15 @@
 import { Group } from "src/core/group/entities/group.entity";
 
 export enum UserRole {
-    User = "user",
-    Auditor = "auditor",
-    Admin = "admin",
-    ERP = "erp", // opsional jika mendukung create user
+    User = "User",
+    Auditor = "Auditor",
+    Admin = "Admin",
+    ERP = "ERP", // opsional jika mendukung create user
 }
 
 export enum UserStatus {
-    Active = "active",
-    Inactive = "inactive",
-    Suspended = "suspended",
+    Active = "Active",
+    Inactive = "Inactive",
 }
 
 export class User {

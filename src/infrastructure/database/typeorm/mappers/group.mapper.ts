@@ -17,7 +17,7 @@ export class GroupORMMapper {
         const entity = new GroupORM();
         entity.name = dto.name;
         entity.description = dto.description;
-        entity.type = dto.type || GroupType.INTERNAL;
+        entity.type = dto.type || GroupType.Internal;
         return entity;
     }
 

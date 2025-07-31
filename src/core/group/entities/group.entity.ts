@@ -1,9 +1,9 @@
 import { User } from "src/core/user/entities/user.entity";
 
 export enum GroupType {
-    INTERNAL = "internal",
-    EXTERNAL = "external",
-    SYSTEM = "SYSTEM",
+    Internal = "Internal",
+    External = "External",
+    System = "System",
 }
 export class Group {
     constructor(

@@ -19,7 +19,7 @@ export class GroupController {
   constructor(private readonly groupFacade: GroupFacadeService) { }
 
   @Post("groups")
-  @TokenGuard(["admin"])
+  @TokenGuard(["Admin"])
   @EnsureValid(createGroupBodySchema, "body")
   @AuditActionDecorator(AuditAction.CREATE_GROUP) // ⬅️ Audit otomatis
   async create(
@@ -29,16 +29,16 @@ export class GroupController {
   }
 
 
-  @Get()
+  @Get('all')
   @ApiOperation(groupDocs.get_all_group)
-  @TokenGuard(["admin"])
+  @TokenGuard(["Admin"])
   async findAll() {
     return this.groupFacade.findAll();
   }
 
 
   @Patch(':id')
-  @TokenGuard(['admin'])
+  @TokenGuard(['Admin'])
   @AuditActionDecorator(AuditAction.UPDATE_GROUP)
   @ApiOperation(groupDocs.get_groupId)
   @EnsureValid(updateGroupBodySchema, 'body')
@@ -51,7 +51,7 @@ export class GroupController {
   }
 
   @Delete(":id")
-  @TokenGuard(["admin"])
+  @TokenGuard(["Admin"])
   @ApiOperation(groupDocs.delete_groupId)
   @AuditActionDecorator(AuditAction.DELETE_GROUP)
   async remove(@Param("id") id: string) {
@@ -59,7 +59,7 @@ export class GroupController {
   }
   @Get(":id")
   @ApiOperation(groupDocs.get_groupId)
-  @TokenGuard(["admin"])
+  @TokenGuard(["Admin"])
   async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.groupFacade.findOne(id);
   }

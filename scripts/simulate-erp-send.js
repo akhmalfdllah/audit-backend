@@ -2,10 +2,10 @@ const axios = require('axios');
 
 const transactions = [
     {
-        title: "Tumbler",
-        amount: 50000,
-        category: "Pembelian",
-        description: "Buat Minum"
+        title: "Laptop",
+        amount: 5000000,
+        category: "Kebutuhan",
+        description: "Buat Gawe"
     }
 ];
 

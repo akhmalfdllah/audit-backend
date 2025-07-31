@@ -1,18 +1,27 @@
 import z from "zod";
-import { ApiProperty, OmitType } from "@nestjs/swagger";
-import { Prop } from "src/shared/utils/common.util";
+import { ApiProperty } from "@nestjs/swagger";
 import { UserRole, UserStatus } from "src/core/user/entities/user.entity";
 
-export const updateUserBodySchema = z.object({
-  fullName: z.string().min(1).optional(),
-  username: z.string().min(1).optional(),
-  role: z.nativeEnum(UserRole, { message: "Invalid role" }).optional(),
-  status: z.nativeEnum(UserStatus).optional(),
-  email: z.string().optional(),
-  groupId: z.string().uuid().optional(),
-  password: z.string().min(1).optional(),
-  confirmPassword: z.string().min(1).optional(),
-});
+export const updateUserBodySchema = z
+  .object({
+    fullName: z.string().trim().min(1).optional(),
+    username: z.string().trim().min(1).toLowerCase().optional(),
+    role: z.nativeEnum(UserRole).optional(),
+    status: z.nativeEnum(UserStatus).optional(),
+    email: z.string().email().optional(),
+    groupId: z.string().uuid().optional(),
+    password: z.string().trim().min(1).optional(),
+    confirmPassword: z.string().trim().min(1).optional(),
+  })
+  .refine((data) => {
+    if (data.password || data.confirmPassword) {
+      return data.password === data.confirmPassword
+    }
+    return true // ✅ tidak ada password = tidak perlu validasi
+  }, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type UpdateUserBodySchema = z.infer<typeof updateUserBodySchema>;
 

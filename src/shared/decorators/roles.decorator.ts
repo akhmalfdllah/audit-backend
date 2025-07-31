@@ -4,5 +4,5 @@ import { JwtRoleKey } from "src/configs/jtw.constant";
 
 
 export const Roles = (...roles: JwtRole[]) => SetMetadata(JwtRoleKey, roles);
-export const allRoles: JwtRole[] = ["auditor", "user"];
+export const allRoles: JwtRole[] = ["Auditor", "User"];
 export type { JwtRole };

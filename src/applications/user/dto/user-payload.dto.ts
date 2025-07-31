@@ -36,7 +36,6 @@ export class UserPayloadDto {
   @Expose()
   group: GroupSummaryDto | null;
 
-
   @ApiProperty({ type: () => Date })
   @Expose()
   createdAt: Date;

@@ -8,15 +8,23 @@ export class JwtAccessGuard extends AuthGuard(JwtAccessName) {
     handleRequest(err, user, info, context: ExecutionContext) {
         const request = context.switchToHttp().getRequest();
 
+        // Ambil token dari cookie jika user belum dikenali
+        if (!user && request.cookies?.access_token) {
+            request.headers['authorization'] = `Bearer ${request.cookies.access_token}`;
+        }
+
         console.log('[JwtAccessGuard] Token info:', {
             user,
             err,
             info,
-            authHeader: request.headers['authorization'],
+            cookieToken: request.cookies?.access_token,
         });
 
-        if (err || !user) {
-            throw err || new UnauthorizedException('Invalid or missing JWT');
+        if (err) {
+            throw err;
+        }
+        if (!user) {
+            throw new UnauthorizedException('Invalid or missing JWT');
         }
 
         return user;

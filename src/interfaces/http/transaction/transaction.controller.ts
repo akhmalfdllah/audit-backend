@@ -27,7 +27,7 @@ export class TransactionController {
     // ✅ Untuk user staff/admin
     @Post()
     @ApiOperation({ summary: 'Create transaction (by user)' })
-    @TokenGuard(['user', 'admin'])
+    @TokenGuard(['User', 'Admin'])
     @EnsureValid(CreateTransactionZodSchema, 'body')
     async createByUser(
         @CurrentUser() user: UserPayloadDto,
@@ -36,7 +36,7 @@ export class TransactionController {
         return this.transactionFacade.create(dto, user.id);
     }
     @Get('all')
-    @TokenGuard(['auditor', 'admin'])
+    @TokenGuard(['Auditor', 'Admin'])
     @ApiOperation({ summary: 'Get all transactions' })
     async findAll() {
         console.log('[TransactionController] findAll dijalankan (tanpa @CurrentUser)');
@@ -55,7 +55,7 @@ export class TransactionController {
     }
 
     @Put(':id/approval')
-    @TokenGuard(['auditor', 'admin'])
+    @TokenGuard(['Auditor', 'Admin'])
     @EnsureValid(ApproveTransactionZodSchema, 'body')
     @ApiOperation({ summary: 'Approve or reject transaction' })
     async approveReject(

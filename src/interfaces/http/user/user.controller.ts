@@ -43,7 +43,7 @@ export class UserController {
 
     @Post()
     @ApiOperation(userDocs.create_user)
-    @TokenGuard(['admin'])
+    @TokenGuard(['Admin'])
     @EnsureValid(createUserBodySchema, 'body')
     async createUser(
         @CurrentUser() user: UserPayloadDto,
@@ -55,9 +55,9 @@ export class UserController {
         });
     }
 
-    @Get()
+    @Get('all')
     @ApiOperation(userDocs.get_user)
-    @TokenGuard(['admin'])
+    @TokenGuard(['Admin'])
     @EnsureValid(searchUserQuerySchema, 'query')
     async findAll(@Query() searchUserQueryDto: SearchUserQueryDto) {
         const searchUserQuery =
@@ -66,7 +66,7 @@ export class UserController {
     }
 
     @Patch('me')
-    @TokenGuard(['admin', 'user', 'auditor'])
+    @TokenGuard(['Admin', 'User', 'Auditor'])
     @AuditActionDecorator(AuditAction.UPDATE_USER)
     @ApiOperation(userDocs.patch_user)
     @EnsureValid(updateSelfBodySchema, 'body')
@@ -79,20 +79,20 @@ export class UserController {
 
     @Get('/group')
     @ApiOperation(userDocs.get_userGroup)
-    @TokenGuard(['admin'])
+    @TokenGuard(['Admin'])
     async retrieveGroup(@User() user: DecodedUser) {
         return await this.userFacade.retrieveGroup(user.id);
     }
 
     @Get(':id')
     @ApiOperation(userDocs.get_userId)
-    @TokenGuard(['admin'])
+    @TokenGuard(['Admin'])
     async findOneUser(@Param('id') id: string): Promise<UserPayloadDto> {
         return this.userFacade.findOne(id); // ✅ sudah jadi DTO, tidak perlu mapping lagi
     }
 
     @Patch(':id')
-    @TokenGuard(['admin'])
+    @TokenGuard(['Admin'])
     @AuditActionDecorator(AuditAction.UPDATE_USER)
     @ApiOperation(userDocs.patch_user)
     @EnsureValid(updateUserBodySchema, 'body')
@@ -110,7 +110,7 @@ export class UserController {
     }
 
     @Delete(':id')
-    @TokenGuard(['admin'])
+    @TokenGuard(['Admin'])
     @ApiOperation(userDocs.delete_user)
     async deleteUser(
         @Param('id') id: string,

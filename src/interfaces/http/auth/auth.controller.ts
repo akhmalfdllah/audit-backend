@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Delete, Body, Res, Req, HttpStatus, HttpCode, UseInterceptors } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { Response, Request } from "express";
+import { ConfigService } from '@nestjs/config';
 import { EnsureValid, RefreshTokenGuard } from "src/shared/decorators/common.decorator";
 import { User } from "src/shared/decorators/params/common.decorator";
 import { authDocs } from "./auth.docs";
@@ -13,12 +14,14 @@ import { CreateUserUseCase } from "src/applications/user/use-cases/create-user.u
 import { AuditLogInterceptor } from "src/shared/interceptors/audit-log.interceptor";
 import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
 import { AuditActionDecorator } from "src/shared/decorators/audit-action.decorator";
+import { access } from "fs";
 @Controller("auth")
 @UseInterceptors(AuditLogInterceptor)
 export class AuthController {
   constructor(
     private readonly authFacadeService: AuthFacadeService,
     private readonly cookieService: CookieService,
+    private readonly configService: ConfigService,
     private readonly createUserUseCase: CreateUserUseCase,
   ) { }
 
@@ -40,20 +43,26 @@ export class AuthController {
     const result = await this.authFacadeService.signIn(dto);
     const { accessToken, refreshToken, user } = result;
 
-    console.log("🎯 Result dari signIn facade:", result);
-    console.log("🔐 Akan set cookie refresh_token:", refreshToken);
+    const cookieConfig = this.configService.get('cookie');
 
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: false, // ⬅️ HARUS false untuk localhost
-      sameSite: "strict",
-      path: "/",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
-    });
+  // Kirim refresh_token
+  res.cookie("refresh_token", refreshToken, cookieConfig);
 
+  // Kirim access_token juga (Wajib untuk endpoint yang pakai @TokenGuard)
+  res.cookie("access_token", accessToken, {
+    ...cookieConfig,
+    maxAge: 60 * 60 * 1000, // override 1 jam (lebih pendek dari refresh)
+  });
+  res.cookie("role", user.role, {
+    sameSite: cookieConfig.sameSite,
+    secure: cookieConfig.secure,
+    httpOnly: false, // HARUS false supaya bisa dibaca frontend
+    path: "/",
+    maxAge: 60 * 60 * 1000,
+  });
     return {
-      accessToken,
       user,
+      role: user.role
     };
   }
 

@@ -11,7 +11,7 @@ export function mapCreateGroupDtoToDomain(dto: CreateGroupBodyDto): Partial<Grou
   return {
     name: dto.name,
     description: dto.description,
-    type: dto.type || GroupType.INTERNAL,
+    type: dto.type || GroupType.Internal,
     members: [], // default kosong
   };
 }

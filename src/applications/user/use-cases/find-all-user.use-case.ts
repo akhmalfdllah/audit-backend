@@ -15,17 +15,7 @@ export class FindAllUsersUseCase {
         keyword?: string;
     }) {
         const users = await this.userRepository.search(query);
-        if (users.length === 0) {
-            if (query.role) {
-                throw new NotFoundException(`Tidak ditemukan user dengan role: ${query.role}`);
-            } else if (query.status) {
-                throw new NotFoundException(`Tidak ditemukan user dengan status: ${query.status}`);
-            } else if (query.keyword) {
-                throw new NotFoundException(`Tidak ditemukan user dengan keyword: ${query.keyword}`);
-            } else {
-                throw new NotFoundException(`Tidak ditemukan user.`);
-            }
-        }
         return plainToInstance(UserPayloadDto, users);
     }
+
 }
