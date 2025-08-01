@@ -1,7 +1,11 @@
 // scripts/simulate-erp-send.js
 const axios = require('axios');
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+console.log('🔍 ENV:', {
+    ERP_API_URL: process.env.ERP_API_URL,
+    ERP_API_KEY: process.env.ERP_API_KEY,
+});
 const { faker } = require('@faker-js/faker');
 
 // ✅ Baca variabel dari .env
