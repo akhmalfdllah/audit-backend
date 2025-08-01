@@ -1,6 +1,6 @@
 const axios = require('axios');
 require('dotenv').config({ path: __dirname + '/.env' });
-const faker = require('faker');
+const { faker } = require('@faker-js/faker');
 
 const apiUrl = process.env.ERP_API_URL;
 const apiKey = process.env.ERP_API_KEY;
