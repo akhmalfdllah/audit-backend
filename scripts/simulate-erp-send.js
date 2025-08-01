@@ -1,18 +1,26 @@
+// scripts/simulate-erp-send.js
 const axios = require('axios');
-require('dotenv').config({ path: __dirname + '/.env' });
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const { faker } = require('@faker-js/faker');
 
+// ✅ Baca variabel dari .env
 const apiUrl = process.env.ERP_API_URL;
 const apiKey = process.env.ERP_API_KEY;
-const interval = parseInt(process.env.ERP_INTERVAL_MS) || 3600000;
- // default 1 jam
+const interval = parseInt(process.env.ERP_INTERVAL_MS || '3600000'); // default 1 jam
+
+// ✅ Validasi agar tidak undefined
+if (!apiUrl || !apiKey) {
+    console.error('❌ ERP_API_URL dan ERP_API_KEY harus diatur di .env');
+    process.exit(1);
+}
 
 const sendFakeTransaction = async () => {
     const trx = {
         title: faker.commerce.productName(),
-        amount: faker.datatype.number({ min: 50000, max: 10000000 }),
+        amount: faker.number.int({ min: 50000, max: 10000000 }),
         category: faker.commerce.department(),
-        description: faker.lorem.sentence()
+        description: faker.lorem.sentence(),
     };
 
     try {
@@ -27,7 +35,7 @@ const sendFakeTransaction = async () => {
     }
 };
 
-console.log(`⏱️ Kirim transaksi setiap ${interval / 60000} menit...`);
+console.log(`⏱️ Kirim transaksi setiap ${interval / 60000} menit...\n📡 Endpoint: ${apiUrl}/transactions/from-erp`);
 
 sendFakeTransaction();
 setInterval(sendFakeTransaction, interval);
