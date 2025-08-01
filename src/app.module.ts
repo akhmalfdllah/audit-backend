@@ -33,7 +33,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     type: 'postgres',
     url: configService.get<string>('database.url'), // ✅ BENAR: pakai configService, bukan config
     autoLoadEntities: true,
-    synchronize: false,
+    synchronize: true,
   }),
 }),
 
