@@ -1,23 +1,14 @@
 import { registerAs } from '@nestjs/config';
-// import type { JwtSignOptions } from "@nestjs/jwt";
-// import {
-//   JWT_ROLE_KEY,
-//   // JWT_ACCESS_NAME,
-//   // JWT_ACCESS_SECRET_KEY,
-//   // JWT_ACCESS_EXPIRE_IN,
-//   // JWT_REFRESH_NAME,
-//   // JWT_REFRESH_SECRECT_KEY,
-//   // JWT_REFRESH_EXPIRE_IN,
-//   // JWT_COMMON_SECRECT_KEY,
-//   // JWT_COMMON_EXPIRE_IN,
-// } from "src/configs/env.config";
 
-export default registerAs('jwt', () => ({
+export default registerAs('jwt', () => {
+  console.log('JWT_SECRET:', process.env.JWT_SECRET); // 🔍 debug
+  return {
   secret: process.env.JWT_SECRET,
   expiresIn: process.env.JWT_EXPIRES_IN,
   refreshSecret: process.env.JWT_REFRESH_SECRET,
   refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
-}));
+  };
+});
 
 
 

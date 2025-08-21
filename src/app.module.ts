@@ -21,17 +21,21 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     // 🔧 Register all config globally
     ConfigModule.forRoot({
       isGlobal: true,
-      ignoreEnvFile: true,
       load: [databaseConfig, jwtConfig, cookieConfig, hashConfig],
+      envFilePath: '.env',
       validate: zodValidator(envValidationSchema),
     }),
 
     // 🛢️ Dynamic database config
     TypeOrmModule.forRootAsync({
   inject: [ConfigService],
-  useFactory: (configService: ConfigService) => ({
+  useFactory: (config: ConfigService) => ({
     type: 'postgres',
-    url: configService.get<string>('database.url'), // ✅ BENAR: pakai configService, bukan config
+    host: config.get<string>('DB_HOST'),
+    port: parseInt(config.get<string>('DB_PORT'), 10),
+    username: config.get<string>('DB_USERNAME'),
+    password: config.get<string>('DB_PASSWORD'),  // ✅ pastikan string
+    database: config.get<string>('DB_NAME'),
     autoLoadEntities: true,
     synchronize: true,
   }),

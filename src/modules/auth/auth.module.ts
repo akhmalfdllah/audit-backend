@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { UserModule } from "src/modules/user/user.module";
 import { AuthController } from "src/interfaces/http/auth/auth.controller";
 import { AuthFacadeService } from "src/interfaces/http/auth/auth.facade.service";
@@ -19,12 +20,27 @@ import { GroupModule } from "src/modules/group/group.module";
 
 @Module({
     imports: [
-        JwtModule.register({ global: true }),
-        UserModule, AuditLogModule, GroupModule,
+        ConfigModule, // pastikan ada
+        JwtModule.registerAsync({
+            global: true,
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (config: ConfigService) => {
+                const secret = config.get<string>('jwt.secret');
+                console.log('JWT_SECRET from ConfigService:', secret); // 🔍 debug
+                return {
+                    secret,
+                    signOptions: { expiresIn: config.get<string>('jwt.expiresIn') },
+                };
+            },
+        }),
+        UserModule,
+        AuditLogModule,
+        GroupModule,
     ],
     controllers: [AuthController],
-    providers: [AuthFacadeService,
-
+    providers: [
+        AuthFacadeService,
         // Use Cases
         SignInUseCase,
         RefreshTokenUseCase,
@@ -33,7 +49,6 @@ import { GroupModule } from "src/modules/group/group.module";
         TokenService,
         ArgonService,
         CookieService,
-
         // JWT Strategies
         RefreshTokenStrategy,
         AccessTokenStrategy,
