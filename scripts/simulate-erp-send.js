@@ -1,45 +1,43 @@
 // scripts/simulate-erp-send.js
-const axios = require('axios');
-const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '.env') });
-console.log('🔍 ENV:', {
+require('dotenv').config();
+const fetch = require('node-fetch');
+const { title } = require('process');
+
+console.log('🔍 ENV Loaded:', {
     ERP_API_URL: process.env.ERP_API_URL,
     ERP_API_KEY: process.env.ERP_API_KEY,
 });
-const { faker } = require('@faker-js/faker');
 
-// ✅ Baca variabel dari .env
-const apiUrl = process.env.ERP_API_URL;
-const apiKey = process.env.ERP_API_KEY;
-const interval = parseInt(process.env.ERP_INTERVAL_MS || '3600000'); // default 1 jam
-
-// ✅ Validasi agar tidak undefined
-if (!apiUrl || !apiKey) {
+if (!process.env.ERP_API_URL || !process.env.ERP_API_KEY) {
     console.error('❌ ERP_API_URL dan ERP_API_KEY harus diatur di .env');
     process.exit(1);
 }
 
-const sendFakeTransaction = async () => {
-    const trx = {
-        title: faker.commerce.productName(),
-        amount: faker.number.int({ min: 50000, max: 10000000 }),
-        category: faker.commerce.department(),
-        description: faker.lorem.sentence(),
-    };
-
-    try {
-        const res = await axios.post(`${apiUrl}/transactions/from-erp`, trx, {
-            headers: {
-                'x-api-key': apiKey
-            }
-        });
-        console.log(`✅ Transaksi terkirim:`, res.data);
-    } catch (err) {
-        console.error(`❌ Gagal kirim transaksi:`, err.response?.data || err.message);
-    }
+// Data transaksi dummy
+const payload = {
+    title: 'Pembayaran Vendor A',
+    amount: Math.floor(Math.random() * 100000),
+    category: 'Pembelian',
+    currency: 'IDR',
+    description: 'Simulasi transaksi dari ERP',
 };
 
-console.log(`⏱️ Kirim transaksi setiap ${interval / 60000} menit...\n📡 Endpoint: ${apiUrl}/transactions/from-erp`);
+async function sendTransaction() {
+    try {
+        const res = await fetch(`${process.env.ERP_API_URL}/transactions/from-erp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': process.env.ERP_API_KEY,
+            },
+            body: JSON.stringify(payload),
+        });
 
-sendFakeTransaction();
-setInterval(sendFakeTransaction, interval);
+        const data = await res.json();
+        console.log('📤 Response:', data);
+    } catch (err) {
+        console.error('❌ Error kirim transaksi:', err.message);
+    }
+}
+
+sendTransaction();

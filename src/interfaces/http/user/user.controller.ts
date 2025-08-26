@@ -23,7 +23,6 @@ import {
     SearchUserQueryDto,
 } from 'src/applications/user/dto/search-user-query.dto';
 import { DecodedUser } from 'src/types/jwt.type';
-import { AuditLogInterceptor } from 'src/shared/interceptors/audit-log.interceptor';
 import { UserPayloadDto } from 'src/applications/user/dto/user-payload.dto';
 import {
     CreateUserBodyDto,
@@ -35,7 +34,7 @@ import { AuditActionDecorator } from 'src/shared/decorators/audit-action.decorat
 
 @Controller('user')
 @ApiBearerAuth()
-@UseInterceptors(AuditLogInterceptor)
+//@UseInterceptors(AuditLogInterceptor)
 export class UserController {
     constructor(
         private readonly userFacade: UserFacadeService,
@@ -45,6 +44,7 @@ export class UserController {
     @ApiOperation(userDocs.create_user)
     @TokenGuard(['Admin'])
     @EnsureValid(createUserBodySchema, 'body')
+    @AuditActionDecorator(AuditAction.CREATE_USER)
     async createUser(
         @CurrentUser() user: UserPayloadDto,
         @Body() dto: CreateUserBodyDto,
@@ -112,9 +112,10 @@ export class UserController {
     @Delete(':id')
     @TokenGuard(['Admin'])
     @ApiOperation(userDocs.delete_user)
+    @AuditActionDecorator(AuditAction.DELETE_USER)
     async deleteUser(
         @Param('id') id: string,
-        @CurrentUser() user: UserPayloadDto,
+        //@CurrentUser() user: UserPayloadDto,
     ) {
         await this.userFacade.delete(id); // ← actorId = user.id
         return { message: 'User successfully deleted.' };

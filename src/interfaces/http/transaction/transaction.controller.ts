@@ -15,26 +15,24 @@ import { ErpAuthenticatedUser } from 'src/types/erp-authenticated-user.type';
 import { UserPayloadDto } from 'src/applications/user/dto/user-payload.dto';
 import { ApproveTransactionDto, ApproveTransactionZodSchema } from 'src/applications/transaction/dto/approve-transaction.dto';
 import { AuditLogInterceptor } from 'src/shared/interceptors/audit-log.interceptor';
-import { AuditAction } from 'src/core/audit-log/entities/audit-log.entity';
-import { AuditActionDecorator } from 'src/shared/decorators/audit-action.decorator';
 
 @Controller('transactions')
 @ApiBearerAuth()
-@UseInterceptors(AuditLogInterceptor)
+//@UseInterceptors(AuditLogInterceptor)
 export class TransactionController {
     constructor(private readonly transactionFacade: TransactionFacade) { }
 
     // ✅ Untuk user staff/admin
-    @Post()
-    @ApiOperation({ summary: 'Create transaction (by user)' })
-    @TokenGuard(['User', 'Admin'])
-    @EnsureValid(CreateTransactionZodSchema, 'body')
-    async createByUser(
-        @CurrentUser() user: UserPayloadDto,
-        @Body() dto: CreateTransactionDto,
-    ) {
-        return this.transactionFacade.create(dto, user.id);
-    }
+    // @Post()
+    // @ApiOperation({ summary: 'Create transaction (by user)' })
+    // @TokenGuard(['User', 'Admin'])
+    // @EnsureValid(CreateTransactionZodSchema, 'body')
+    // async createByUser(
+    //     @CurrentUser() user: UserPayloadDto,
+    //     @Body() dto: CreateTransactionDto,
+    // ) {
+    //     return this.transactionFacade.create(dto, user.id);
+    // }
     @Get('all')
     @TokenGuard(['Auditor', 'Admin'])
     @ApiOperation({ summary: 'Get all transactions' })

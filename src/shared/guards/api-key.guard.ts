@@ -3,7 +3,6 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { Inject } from '@nestjs/common';
 import { Request } from 'express';
 import { UserRepository } from 'src/core/user/repositories/user.repository';
-import { UserRole, UserStatus } from 'src/core/user/entities/user.entity';
 import { ErpAuthenticatedUser } from 'src/types/erp-authenticated-user.type';
 
 @Injectable()
@@ -31,11 +30,6 @@ export class ApiKeyGuard implements CanActivate {
             role: user.role,
             status: user.status
         });
-
-        if (!user || user.role !== UserRole.ERP || user.status !== UserStatus.Active ) {
-            console.log("❌ Role atau status tidak valid")
-            throw new UnauthorizedException('Invalid API key');
-        }
 
         request.user = {
             id: user.id,
