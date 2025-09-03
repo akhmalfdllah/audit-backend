@@ -6,6 +6,9 @@ export class GetPaginatedAuditLogsUseCase {
     constructor(private readonly auditLogRepo: AuditLogRepository) { }
 
     async execute(offset: number, limit: number) {
-        return this.auditLogRepo.findPaginated(offset, limit);
-    }
+    return await this.auditLogRepo.findPaginated(offset, limit);
+}
+
+
+
 }

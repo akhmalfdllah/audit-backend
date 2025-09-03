@@ -34,10 +34,9 @@ export class TransactionController {
     //     return this.transactionFacade.create(dto, user.id);
     // }
     @Get('all')
-    @TokenGuard(['Auditor', 'Admin'])
+    @TokenGuard(['Auditor',])
     @ApiOperation({ summary: 'Get all transactions' })
     async findAll() {
-        console.log('[TransactionController] findAll dijalankan (tanpa @CurrentUser)');
         return this.transactionFacade.findAll();
     }
     // ✅ Untuk sistem ERP
@@ -53,7 +52,7 @@ export class TransactionController {
     }
 
     @Put(':id/approval')
-    @TokenGuard(['Auditor', 'Admin'])
+    @TokenGuard(['Auditor'])
     @EnsureValid(ApproveTransactionZodSchema, 'body')
     @ApiOperation({ summary: 'Approve or reject transaction' })
     async approveReject(

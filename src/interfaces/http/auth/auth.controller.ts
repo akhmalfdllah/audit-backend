@@ -9,12 +9,10 @@ import { AuthFacadeService } from "src/interfaces/http/auth/auth.facade.service"
 import { CookieService } from "src/shared/services/cookie.service";
 import { signInBodySchema, SignInBodyDto } from "src/applications/auth/dto/signin-body.dto";
 import { DecodedUser } from "src/types/jwt.type";
-import { createUserBodySchema, CreateUserBodyDto } from "src/applications/user/dto/create-user-body.dto";
-import { CreateUserUseCase } from "src/applications/user/use-cases/create-user.use-case";
 import { AuditLogInterceptor } from "src/shared/interceptors/audit-log.interceptor";
 import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
 import { AuditActionDecorator } from "src/shared/decorators/audit-action.decorator";
-import { access } from "fs";
+import { MeDto } from "src/applications/auth/dto/me.dto";
 @Controller("auth")
 @UseInterceptors(AuditLogInterceptor)
 export class AuthController {
@@ -22,7 +20,6 @@ export class AuthController {
     private readonly authFacadeService: AuthFacadeService,
     private readonly cookieService: CookieService,
     private readonly configService: ConfigService,
-    private readonly createUserUseCase: CreateUserUseCase,
   ) { }
 
   // @Post("signup")
@@ -75,6 +72,12 @@ export class AuthController {
     return await this.authFacadeService.newAccessToken(user.id, refreshToken);
   }
 
+  @Get("me")
+  @RefreshTokenGuard()
+  async getMe(@Req() req: Request): Promise<MeDto> {
+    return this.authFacadeService.getMe(req.user.id);
+  }
+
   @Delete("signout")
   @HttpCode(HttpStatus.OK)
   @ApiOperation(authDocs.delete_signout)
@@ -86,19 +89,4 @@ export class AuthController {
     res.status(HttpStatus.OK).json(payload); // ✅ INI WAJIB
   }
 }
-
-  // @Get("test-cookie")
-  // getTestCookie(@Res({ passthrough: true }) res: Response) {
-  //   const dummyToken = "dummy-cookie-value";
-
-  //   res.cookie("refresh_token", dummyToken, {
-  //     httpOnly: true,
-  //     secure: false, // ✅ HARUS false di localhost
-  //     sameSite: "strict",
-  //     path: "/",
-  //     maxAge: 60 * 60 * 1000, // 1 jam
-  //   });
-
-  //   return { message: "✅ Cookie test berhasil dikirim", debug: dummyToken };
-  // }
 

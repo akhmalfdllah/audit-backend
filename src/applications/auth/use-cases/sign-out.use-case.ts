@@ -1,12 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { UpdateRefreshTokenUseCase } from "src/applications/user/use-cases/common.use-case";
-import { AuditLogFacade } from "src/interfaces/http/audit-log/audit-log.facade";
 
 @Injectable()
 export class SignOutUseCase {
     constructor(
         private readonly updateRefreshTokenUseCase: UpdateRefreshTokenUseCase,
-        private readonly auditLogFacade: AuditLogFacade,
     ) { }
 
     async execute(userId: string, refreshToken: string) {

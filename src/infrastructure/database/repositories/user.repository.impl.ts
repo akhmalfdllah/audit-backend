@@ -70,16 +70,6 @@ export class UserRepositoryImpl {
         },
       ];
 
-    // Validasi: minimal satu filter harus diisi
-    // if (
-    //   !filter.keyword &&
-    //   !filter.role &&
-    //   !filter.status &&
-    //   !filter.group?.id
-    // ) {
-    //   throw new BadRequestException('Minimal satu filter harus diisi');
-    // }
-
     // Validasi pagination
     const limit = Number(filter.limit) || 10;
     const page = Number(filter.page) || 1;
@@ -114,6 +104,10 @@ export class UserRepositoryImpl {
 
   async findAllByGroupId(groupId: string): Promise<User[]> {
     return this.ormRepo.find({ where: { group: { id: groupId } } });
+  }
+
+  async findById(id: string): Promise<User | null> {
+    return this.ormRepo.findOne({ where: { id } });
   }
 
   async find(options: FindManyOptions<User>): Promise<User[]> {

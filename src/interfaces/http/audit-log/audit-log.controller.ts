@@ -11,13 +11,20 @@ import { TokenGuard } from "src/shared/decorators/token-guard.decorator";
 export class AuditLogController {
     constructor(private readonly auditLogFacade: AuditLogFacade) { }
 
-    @Get()
+    @Get('paginated')
     @TokenGuard(["Admin", "Auditor"])
-    async getAllLogs(@Query('page') page = '1') {
-        const limit = 10;
-        const pageNum = parseInt(page, 10);
-        const offset = (pageNum - 1) * limit;
-        return await this.auditLogFacade.findPaginated(offset, limit);
+    async getPaginatedLogs(
+        @Query('offset') offset = '0',
+        @Query('limit') limit = '10'
+    ) {
+        const off = parseInt(offset, 10);
+        const lim = parseInt(limit, 10);
+        const result = await this.auditLogFacade.findPaginated(off, lim);
+        return {
+            data: result.data,
+            total: result.total,
+            hasMore: off + lim < result.total,
+        };
     }
 
     @Get("by-action/:action")

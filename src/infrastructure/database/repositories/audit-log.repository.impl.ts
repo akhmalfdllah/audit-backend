@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { AuditLogRepository as AbstractAuditLogRepo } from 'src/core/audit-log/repositories/audit-log.repository';
 import { AuditLog } from 'src/core/audit-log/entities/audit-log.entity';
 import { AuditLogORM } from 'src/infrastructure/database/typeorm/entities/audit-log.orm-entity';
@@ -20,14 +20,29 @@ export class AuditLogRepositoryImpl implements AbstractAuditLogRepo {
         return AuditLogMapper.toDomain(saved);
     }
 
-    async findPaginated(offset: number, limit: number): Promise<AuditLog[]> {
-        const found = await this.repo.find({
+    async findPaginated(offset: number, limit: number): Promise<{ data: AuditLog[]; total: number }> {
+        const allowedActions = [
+            "CREATE_USER",
+            "UPDATE_USER",
+            "DELETE_USER",
+            "SIGNOUT",
+            "SIGNIN",
+            "CREATE_GROUP",
+            "UPDATE_GROUP",
+            "DELETE_GROUP",
+        ];
+
+        const [result, total] = await this.repo.findAndCount({
+            where: { action: In(allowedActions) },
             skip: offset,
             take: limit,
             order: { createdAt: 'DESC' },
         });
 
-        return found.map((orm) => AuditLogMapper.toDomain(orm));
+        return {
+            data: result.map((orm) => AuditLogMapper.toDomain(orm)),
+            total,
+        };
     }
 
     async findByAction(action: AuditAction): Promise<AuditLog[]> {

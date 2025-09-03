@@ -13,11 +13,8 @@ export class DashboardController {
     @Get("summary")
     async getSummary() {
         this.logger.log("📊 Memanggil endpoint GET /dashboard/summary")
-
         const summary = await this.dashboardFacade.getSummaryData()
-
         this.logger.debug("✅ Ringkasan data:", summary)
-
         return summary
     }
 }
