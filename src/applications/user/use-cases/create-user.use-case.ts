@@ -6,6 +6,7 @@ import { CreateUserInput } from "src/applications/user/dto/create-user-body.dto"
 import { UserPayloadDto } from "src/applications/user/dto/user-payload.dto";
 import { GroupRepository } from "src/core/group/repositories/group.repository";
 import { AuditLogFacade } from "src/interfaces/http/audit-log/audit-log.facade";
+import { UserStatus } from "src/core/user/entities/user.entity";
 import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
 
 @Injectable()
@@ -18,7 +19,7 @@ export class CreateUserUseCase {
   ) { }
 
   async execute(dto: CreateUserInput) {
-    const { username, password, confirmPassword, groupId, actorId, ...rest } = dto;
+    const { username, password, confirmPassword, groupId, status, actorId, ...rest } = dto;
     console.log('actorId:', actorId);
 
     if (password !== confirmPassword) {
@@ -37,6 +38,7 @@ export class CreateUserUseCase {
       username,
       password: hashedPassword,
       group,
+      status: status ?? UserStatus.Active, // fallback kalau undefined
     });
 
     return plainToInstance(UserPayloadDto, saved);

@@ -6,6 +6,7 @@ import { GroupRepository } from "src/core/group/repositories/group.repository";
 import { UpdateUserBodyTransformed } from "src/applications/user/dto/update-user-body.dto";
 import { UserPayloadDto } from "src/applications/user/dto/user-payload.dto";
 import { Group } from "src/core/group/entities/group.entity";
+import { UserStatus } from "src/core/user/entities/user.entity";
 
 @Injectable()
 export class UpdateUserUseCase {
@@ -20,6 +21,10 @@ export class UpdateUserUseCase {
         if (!user) throw new NotFoundException("user not found");
 
         const { password, confirmPassword, groupId, actorId, ...rest } = dto;
+
+        if (rest.status) {
+        rest.status = UserStatus[rest.status as keyof typeof UserStatus];
+    }
 
         // ✅ Validasi password
         let newPassword = undefined;
@@ -48,15 +53,11 @@ export class UpdateUserUseCase {
 
         // ✅ Filter hanya nilai yang valid dan berubah dari sebelumnya
         const updateData: Partial<typeof user> = {};
-        Object.entries(rest).forEach(([key, value]) => {
-            if (
-                value !== undefined &&
-                value !== "string" &&
-                value !== user[key]
-            ) {
-                updateData[key] = value;
-            }
-        });
+Object.entries(rest).forEach(([key, value]) => {
+    if (value !== undefined && value !== user[key]) {
+        updateData[key] = value;
+    }
+});
 
         // ✅ Tambahkan group dan password jika perlu
         updateData.group = group;

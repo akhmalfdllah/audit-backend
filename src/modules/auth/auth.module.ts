@@ -8,7 +8,6 @@ import {
     SignInUseCase,
     RefreshTokenUseCase,
     SignOutUseCase,
-    MeUseCase,
 } from "src/applications/auth/use-cases/common.use-case"
 import { AccessTokenStrategy } from "src/shared/strategies/access-token.strategy";
 import { RefreshTokenStrategy } from "src/shared/strategies/refresh-token.strategy";
@@ -46,7 +45,6 @@ import { GroupModule } from "src/modules/group/group.module";
         SignInUseCase,
         RefreshTokenUseCase,
         SignOutUseCase,
-        MeUseCase,
         // Shared Services
         TokenService,
         ArgonService,

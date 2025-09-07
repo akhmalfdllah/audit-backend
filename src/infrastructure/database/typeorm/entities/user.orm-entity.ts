@@ -23,8 +23,12 @@ export class UserORM {
     @Column({ nullable: true })
     fullName: string | null;
 
-    @Column({ type: 'enum', enum: UserStatus, default: UserStatus.Active })
-    status: UserStatus;
+    @Column({
+  type: 'enum',
+  enum: UserStatus,
+  nullable: false, // wajib ada
+})
+status: UserStatus;
 
     // @Column({ name: 'refresh_token', nullable: true })
     // refreshToken?: string;

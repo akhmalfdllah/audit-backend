@@ -28,6 +28,7 @@ export class UserORMMapper {
     orm.password = domain.password;
     orm.role = domain.role;
     orm.fullName = domain.fullName;
+    orm.status = domain.status;
     orm.email = domain.email;
     orm.group = domain.group ? GroupORMMapper.toOrm(domain.group): null;
     orm.createdAt = domain.createdAt;

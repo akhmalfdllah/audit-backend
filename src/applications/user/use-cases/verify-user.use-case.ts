@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import { Injectable, BadRequestException, UnauthorizedException } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { UserRepository } from "src/core/user/repositories/user.repository";
 import { ArgonService } from "src/shared/services/argon.service";
@@ -26,6 +26,12 @@ export class VerifyUserUseCase {
             }
             throw error;
         }
+
+        if (user.status === "Inactive") {
+            console.warn(`🚫 Login ditolak: User ${user.email} akun anda dinonaktifkan`);
+            throw new UnauthorizedException("Akun anda dinonaktifkan, hubungi admin");
+        }
+
         console.log("🔐 Password hash:", user.password);
         console.log("🔍 Cek validitas password...");
         const isValid = await this.argonService.verifyPassword(user.password, dto.password);

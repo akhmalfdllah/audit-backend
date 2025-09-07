@@ -72,12 +72,6 @@ export class AuthController {
     return await this.authFacadeService.newAccessToken(user.id, refreshToken);
   }
 
-  @Get("me")
-  @RefreshTokenGuard()
-  async getMe(@Req() req: Request): Promise<MeDto> {
-    return this.authFacadeService.getMe(req.user.id);
-  }
-
   @Delete("signout")
   @HttpCode(HttpStatus.OK)
   @ApiOperation(authDocs.delete_signout)

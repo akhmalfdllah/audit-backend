@@ -37,7 +37,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     password: config.get<string>('DB_PASSWORD'),  // ✅ pastikan string
     database: config.get<string>('DB_NAME'),
     autoLoadEntities: true,
-    synchronize: true,
+    synchronize: false,
   }),
 }),
 
