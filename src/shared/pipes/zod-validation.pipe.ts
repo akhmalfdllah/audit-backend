@@ -5,7 +5,7 @@ export class ZodValidationPipe implements PipeTransform {
   constructor(
     private schema: ZodSchema,
     private paramType?: Paramtype,
-  ) {}
+  ) { }
 
   transform(value: unknown, metadata: ArgumentMetadata) {
     try {
@@ -21,11 +21,12 @@ export class ZodValidationPipe implements PipeTransform {
       }
     } catch (error) {
       if (error instanceof ZodError) {
-        const message = error.issues.map(issue => issue.message).join(', ');
+        console.error('Zod validation failed:', error.issues);
+        const message = error.issues.map(i => i.message).join(', ');
         throw new BadRequestException(message);
       }
-
       throw new BadRequestException("validation failed");
     }
   }
 }
+

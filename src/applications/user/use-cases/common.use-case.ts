@@ -6,6 +6,6 @@ export * from "./update-user.use-case";
 export * from "./verify-user.use-case";
 export * from "./verify-user-refresh.use-case";
 export * from "./update-refresh-token.use-case";
-export * from "./update-self-user.use-case";
+export * from "./change-password.use-case";
 export * from "./sign-out.use-case";
 export * from "./retrieve-group.use-case";

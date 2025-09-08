@@ -29,7 +29,7 @@ export class VerifyUserUseCase {
 
         if (user.status === "Inactive") {
             console.warn(`🚫 Login ditolak: User ${user.email} akun anda dinonaktifkan`);
-            throw new UnauthorizedException("Akun anda dinonaktifkan, hubungi admin");
+            throw new BadRequestException("Akun anda dinonaktifkan, hubungi admin");
         }
 
         console.log("🔐 Password hash:", user.password);

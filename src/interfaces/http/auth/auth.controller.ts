@@ -9,12 +9,11 @@ import { AuthFacadeService } from "src/interfaces/http/auth/auth.facade.service"
 import { CookieService } from "src/shared/services/cookie.service";
 import { signInBodySchema, SignInBodyDto } from "src/applications/auth/dto/signin-body.dto";
 import { DecodedUser } from "src/types/jwt.type";
-import { AuditLogInterceptor } from "src/shared/interceptors/audit-log.interceptor";
 import { AuditAction } from "src/core/audit-log/entities/audit-log.entity";
 import { AuditActionDecorator } from "src/shared/decorators/audit-action.decorator";
-import { MeDto } from "src/applications/auth/dto/me.dto";
+
 @Controller("auth")
-@UseInterceptors(AuditLogInterceptor)
+//@UseInterceptors(AuditLogInterceptor)
 export class AuthController {
   constructor(
     private readonly authFacadeService: AuthFacadeService,
@@ -75,6 +74,7 @@ export class AuthController {
   @Delete("signout")
   @HttpCode(HttpStatus.OK)
   @ApiOperation(authDocs.delete_signout)
+  @AuditActionDecorator(AuditAction.SIGNOUT)
   @RefreshTokenGuard()
   async signOut(@Req() req: Request, @Res() res: Response, @User() user: DecodedUser) {
     const refreshToken = this.cookieService.getCookieRefreshToken(req);

@@ -1,4 +1,5 @@
-import { Controller, Get, Body, Patch, Param, Query, UseInterceptors, Post, Delete,
+import {
+    Controller, Get, Body, Patch, Param, Query, UseInterceptors, Post, Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import {
@@ -9,9 +10,9 @@ import { User } from 'src/shared/decorators/params/user.decorator';
 import { userDocs } from 'src/interfaces/http/user/user.docs';
 import { UserFacadeService } from 'src/interfaces/http/user/user.facade.service';
 import {
-    updateSelfBodySchema,
-    UpdateSelfBodyDto,
-} from 'src/applications/user/dto/update-self-body.dto';
+    changePasswordSchema,
+    ChangePasswordDto,
+} from 'src/applications/user/dto/change-password.dto';
 import {
     updateUserBodySchema,
     UpdateUserBodyTransformed,
@@ -65,16 +66,16 @@ export class UserController {
         return await this.userFacade.findAll(searchUserQuery);
     }
 
-    @Patch('me')
-    @TokenGuard(['Admin', 'User', 'Auditor'])
+    @Patch('me/password')
+    @TokenGuard(['Admin', 'Auditor'])
     @AuditActionDecorator(AuditAction.UPDATE_USER)
-    @ApiOperation(userDocs.patch_user)
-    @EnsureValid(updateSelfBodySchema, 'body')
-    async updateMe(
+    @ApiOperation({ summary: 'Change own password' })
+    @EnsureValid(changePasswordSchema, 'body')
+    async changePassword(
         @CurrentUser() user: UserPayloadDto,
-        @Body() dto: UpdateSelfBodyDto,
+        @Body() dto: ChangePasswordDto,
     ) {
-        return this.userFacade.safeUpdate(user.id, dto); // actorId = user.id
+        return this.userFacade.changePassword(user.id, dto.currentPassword, dto.newPassword, dto.confirmPassword);
     }
 
     @Get('/group')
@@ -101,7 +102,7 @@ export class UserController {
         @CurrentUser() user: UserPayloadDto,
         @Body() updateUserBodyDto: UpdateUserBodyDto,
     ) {
-        const transformed =updateUserBodyDto as unknown as UpdateUserBodyTransformed;
+        const transformed = updateUserBodyDto as unknown as UpdateUserBodyTransformed;
 
         return this.userFacade.update(id, {
             ...transformed,

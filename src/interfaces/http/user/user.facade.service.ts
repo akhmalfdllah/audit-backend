@@ -4,7 +4,7 @@ import {
     FindAllUsersUseCase,
     FindOneUserUseCase,
     UpdateUserUseCase,
-    UpdateSelfUserUseCase,
+    ChangePasswordUseCase,
     DeleteUserUseCase,
     VerifyUserUseCase,
     VerifyUserWithRefreshTokenUseCase,
@@ -15,7 +15,7 @@ import {
 
 import {
     CreateUserInput,
-    UpdateSelfBodyDto,
+    ChangePasswordDto,
     SearchUserQueryTransformed,
     UpdateUserBodyTransformed,
     VerifyUserBodyDto,
@@ -29,7 +29,7 @@ export class UserFacadeService {
         private readonly findAllUsersUseCase: FindAllUsersUseCase,
         private readonly findOneUserUseCase: FindOneUserUseCase,
         private readonly updateUserUseCase: UpdateUserUseCase,
-        private readonly updateSelfUserUseCase: UpdateSelfUserUseCase,
+        private readonly changePasswordUseCase: ChangePasswordUseCase,
         private readonly deleteUserUseCase: DeleteUserUseCase,
         private readonly verifyUserUseCase: VerifyUserUseCase,
         private readonly verifyUserWithRefreshTokenUseCase: VerifyUserWithRefreshTokenUseCase,
@@ -54,9 +54,10 @@ export class UserFacadeService {
         return this.updateUserUseCase.execute(id, dto);
     }
 
-    async safeUpdate(id: string, dto: UpdateSelfBodyDto) {
-        return this.updateSelfUserUseCase.execute(id, dto);
-    }
+    async changePassword(userId: string, currentPassword: string, newPassword: string, confirmPassword: string) {
+        console.log(currentPassword, newPassword, confirmPassword);
+    return this.changePasswordUseCase.execute(userId, currentPassword, newPassword, confirmPassword);
+  }
 
     async delete(id: string): Promise<void> {
         return this.deleteUserUseCase.execute(id);
