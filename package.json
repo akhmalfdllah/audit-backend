@@ -41,6 +41,7 @@
     "cookie-parser": "^1.4.7",
     "faker": "^6.6.6",
     "jest-mock-extended": "^4.0.0",
+    "node-cron": "^4.2.1",
     "passport-jwt": "^4.0.1",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",

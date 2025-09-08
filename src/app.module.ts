@@ -2,7 +2,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import databaseConfig from './configs/database.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
@@ -15,6 +14,7 @@ import cookieConfig from './configs/cookie.config';
 import { zodValidator } from './shared/utils/zod-env-validator';
 import envValidationSchema from './configs/env.validation';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ErpSchedulerService } from 'src/erp/erp-scheduler.service';
 
 @Module({
   imports: [
@@ -38,6 +38,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     database: config.get<string>('DB_NAME'),
     autoLoadEntities: true,
     synchronize: false,
+    migrations: ['dist/src/migrations/*.js'],
   }),
 }),
 
@@ -49,6 +50,9 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     TransactionModule,
     AuditLogModule,
     DashboardModule
+  ],
+  providers: [
+    ErpSchedulerService,   // ✅ Wajib ada
   ],
 })
 export class AppModule { }
