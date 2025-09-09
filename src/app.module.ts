@@ -31,17 +31,12 @@ import { ErpSchedulerService } from 'src/erp/erp-scheduler.service';
   inject: [ConfigService],
   useFactory: (config: ConfigService) => ({
     type: 'postgres',
-    host: config.get<string>('DB_HOST'),
-    port: parseInt(config.get<string>('DB_PORT'), 10),
-    username: config.get<string>('DB_USERNAME'),
-    password: config.get<string>('DB_PASSWORD'),  // ✅ pastikan string
-    database: config.get<string>('DB_NAME'),
+    url: config.get<string>('DATABASE_URL'),
     autoLoadEntities: true,
     synchronize: false,
     migrations: ['dist/src/migrations/*.js'],
   }),
 }),
-
 
     // 🧩 Feature modules
     AuthModule,
