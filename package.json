@@ -12,6 +12,7 @@
     "simulate-erp": "node scripts/simulate-erp-send.js",
     "start:prod": "node dist/main", 
     "start:worker": "ENABLE_ERP_SCHEDULER=true node dist/main.js", 
+    "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
