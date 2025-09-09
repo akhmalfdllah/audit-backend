@@ -30,7 +30,7 @@ async function bootstrap() {
     logger.log('✅ ERP Scheduler berjalan.');
     return; // jangan start HTTP server
   }
-  
+
   // 🌐 Mode default: jalankan web server NestJS
   const app = await NestFactory.create(AppModule);
 
@@ -59,7 +59,7 @@ async function bootstrap() {
 
   // 🌐 Ambil PORT dari .env lewat ConfigService
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT') || 3000;
+  const port = parseInt(configService.get<string>('PORT') || '3000', 10);
 
   await app.listen(port);
   console.log(`🚀 Server berjalan di http://localhost:${port}`);
