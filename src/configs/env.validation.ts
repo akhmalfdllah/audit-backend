@@ -40,6 +40,7 @@ import { z } from "zod";
 export const envValidationSchema = z.object({
     PORT: z.string().default("3000"),
 
+    DATABASE_URL: z.string().url(),
     DB_HOST: z.string(),
     DB_PORT: z.string(),
     DB_USERNAME: z.string(),
