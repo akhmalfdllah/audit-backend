@@ -34,7 +34,6 @@ import { ErpSchedulerService } from 'src/erp/erp-scheduler.service';
     url: config.get<string>('DATABASE_URL'),
     autoLoadEntities: true,
     synchronize: false,
-    migrations: ['dist/src/migrations/*.js'],
   }),
 }),
 
