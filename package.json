@@ -7,10 +7,10 @@
   "scripts": {
     "start": "nest start",
     "build": "nest build",
-    "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "simulate-erp": "node scripts/simulate-erp-send.js",
-    "start:prod": "node dist/main", 
+    "start:prod": "node dist/main.js",
+    "start:erp": "node dist/erp/simulate-erp-send.js",
+    "dev:erp": "ts-node src/erp/simulate-erp-send.ts",
     "start:worker": "ENABLE_ERP_SCHEDULER=true node dist/main.js", 
   "migration:generate:local": "set NODE_ENV=local&& ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate src/infrastructure/database/migrations/InitSchema -d src/infrastructure/database/data-source.ts",
 "migration:run:local": "set NODE_ENV=local&& ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/infrastructure/database/data-source.ts",
