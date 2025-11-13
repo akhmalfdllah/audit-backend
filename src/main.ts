@@ -42,7 +42,7 @@ async function bootstrap() {
 
   // 🔐 CORS (sesuaikan jika frontend terpisah)
   app.enableCors({
-    origin: 'http://localhost:3001',
+    origin: process.env.FRONTEND_URL,
     credentials: true, // ⬅️ WAJIB AGAR COOKIE DIKIRIM
   });
 
