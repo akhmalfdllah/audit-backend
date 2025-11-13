@@ -52,7 +52,7 @@ export class AuthController {
   res.cookie("role", user.role, {
     sameSite: cookieConfig.sameSite,
     secure: cookieConfig.secure,
-    httpOnly: false, // HARUS false supaya bisa dibaca frontend
+    httpOnly: true, // HARUS false supaya bisa dibaca frontend
     path: "/",
     maxAge: 60 * 60 * 1000,
   });

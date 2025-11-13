@@ -34,6 +34,7 @@ export const envValidationSchema = z.object({
         .transform((val) => val === "true")
         .default("false"),
     COOKIE_MAX_AGE: z.string(),
+    NODE_ENV: z.string(),
 
     // 🔒 Argon2 Config
     ARGON_SECRET_KEY: z.string(),

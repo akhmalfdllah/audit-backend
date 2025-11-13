@@ -45,6 +45,7 @@ async function bootstrap() {
     origin: process.env.FRONTEND_URL,
     credentials: true, // ⬅️ WAJIB AGAR COOKIE DIKIRIM
   });
+  console.log('FRONTEND_URL dari ENV:', process.env.FRONTEND_URL);
 
   // 📘 Swagger setup
   const config = new DocumentBuilder()
