@@ -38,14 +38,14 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)), new AuditLogInterceptor(app.get(AuditLogFacade), app.get(Reflector)),);
 
   // 🍪 Untuk parsing cookie (dibutuhkan kalau pakai refresh token via cookie)
-  app.use(cookieParser());
-
+  
   // 🔐 CORS (sesuaikan jika frontend terpisah)
   app.enableCors({
     origin: process.env.FRONTEND_URL,
     credentials: true, // ⬅️ WAJIB AGAR COOKIE DIKIRIM
   });
   console.log('FRONTEND_URL dari ENV:', process.env.FRONTEND_URL);
+  app.use(cookieParser());
 
   // 📘 Swagger setup
   const config = new DocumentBuilder()
