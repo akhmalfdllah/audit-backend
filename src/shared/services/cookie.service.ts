@@ -19,6 +19,7 @@ export class CookieService {
             httpOnly: config.httpOnly,
             sameSite: config.sameSite as 'strict' | 'lax' | 'none' | boolean,
             path: config.path,
+            partitioned: config.partitioned,
             maxAge: config.maxAge,
         };
 

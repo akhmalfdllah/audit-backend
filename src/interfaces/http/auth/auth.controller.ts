@@ -47,6 +47,7 @@ res.cookie("refresh_token", refreshToken, {
   secure: true,
   sameSite: "none",
   path: "/",
+  partitioned: true,
   maxAge: 7 * 24 * 60 * 60 * 1000,
 });
 
@@ -56,6 +57,7 @@ res.cookie("access_token", accessToken, {
   secure: true,
   sameSite: "none",
   path: "/",
+  partitioned: true,
   maxAge: 60 * 60 * 1000,
 });
 
@@ -65,6 +67,7 @@ res.cookie("role", user.role, {
   sameSite: "none",
   httpOnly: false,
   path: "/",
+  partitioned: true,
   maxAge: 60 * 60 * 1000,
 });
     return {
