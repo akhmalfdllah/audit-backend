@@ -27,6 +27,15 @@ export class AuthController {
   // async signUp(@Body() dto: CreateUserBodyDto) {
   //   return this.createUserUseCase.execute(dto);
   // }
+  @Get("me")
+@RefreshTokenGuard() // guard baca access_token dari cookie
+me(@Req() req) {
+  return {
+    id: req.user.id,
+    username: req.user.username,
+    role: req.user.role,
+  };
+}
 
   @Post("signin")
   @HttpCode(HttpStatus.OK)
