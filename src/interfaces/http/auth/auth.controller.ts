@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Delete, Body, Res, Req, HttpStatus, HttpCode, UseInterceptors } from "@nestjs/common";
+import { Controller, Get, Post, Delete, Body, Res, Req, HttpStatus, HttpCode } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { Response, Request } from "express";
-import { ConfigService } from '@nestjs/config';
+//import { ConfigService } from '@nestjs/config';
 import { EnsureValid, RefreshTokenGuard } from "src/shared/decorators/common.decorator";
 import { User } from "src/shared/decorators/params/common.decorator";
 import { authDocs } from "./auth.docs";
@@ -18,7 +18,7 @@ export class AuthController {
   constructor(
     private readonly authFacadeService: AuthFacadeService,
     private readonly cookieService: CookieService,
-    private readonly configService: ConfigService,
+    //private readonly configService: ConfigService,
   ) { }
 
   // @Post("signup")
@@ -39,23 +39,34 @@ export class AuthController {
     const result = await this.authFacadeService.signIn(dto);
     const { accessToken, refreshToken, user } = result;
 
-    const cookieConfig = this.configService.get('cookie');
+    //const cookieConfig = this.configService.get('cookie');
 
-  // Kirim refresh_token
-  res.cookie("refresh_token", refreshToken, cookieConfig);
+  // refresh_token
+res.cookie("refresh_token", refreshToken, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
 
-  // Kirim access_token juga (Wajib untuk endpoint yang pakai @TokenGuard)
-  res.cookie("access_token", accessToken, {
-    ...cookieConfig,
-    maxAge: 60 * 60 * 1000, // override 1 jam (lebih pendek dari refresh)
-  });
-  res.cookie("role", user.role, {
-    sameSite: 'none',
-    secure: true,
-    httpOnly: true, // HARUS false supaya bisa dibaca frontend
-    path: "/",
-    maxAge: 60 * 60 * 1000,
-  });
+// access_token
+res.cookie("access_token", accessToken, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 60 * 60 * 1000,
+});
+
+// role (boleh dibaca JS)
+res.cookie("role", user.role, {
+  secure: true,
+  sameSite: "none",
+  httpOnly: false,
+  path: "/",
+  maxAge: 60 * 60 * 1000,
+});
     return {
       user,
       role: user.role
